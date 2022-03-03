@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CAS-WebApp</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&family=Kalam:wght@300&display=swap" rel="stylesheet">
+        <link rel='icon' href='/img/favicon.png'>
+        <link rel='stylesheet' href='/css/styles.css'>
+    </head>
+    <body>
+        <div class="main-content">
+            {{>header}}
+            <h2>Last News</h2> 
+            <ul class="news-item">
+                <li>
+                    <div class="news-header">
+                        <p class="news-title">Release of <strong>Snake Game</strong></p>
+                        <p class="news-date">04.03.2022</p>
+                    </div>  
+                    <p class="news-content">
+                        Today, I release the <em>first</em> version of the <strong>Snake Game</strong>.<br/>
+                        Enjoy to feed your snake while taking care not to drop on a <strong>bomb</strong>!
+                    </p>  
+                </li>                
+                <li>
+                    <div class="news-header">
+                        <p class="news-title"><strong>CAS-WebApp</strong> is <strong>life</strong>!</p>
+                        <p class="news-date">04.03.2022</p>
+                    </div>  
+                    <p class="news-content">
+                        Welcome to my <strong>CAS-WebApp</strong> portal.<br/>
+                        The purpose of this site is to share with other <strong>fhnw</strong> students and teachers my homeworks and achivements.
+                    </p>  
+                </li>
+            </ul>
+        </div>
+        {{>footer}}
+    </body>
+</html>
