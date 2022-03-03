@@ -1,3 +1,3 @@
 # fhnw-caswapp-website
 
-https://cyriadam-fhnw-portal.herokuapp.com/
+- 👋 Hi, the portal is deployed on heroku : https://cyriadam-fhnw-portal.herokuapp.com
