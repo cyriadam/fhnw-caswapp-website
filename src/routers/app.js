@@ -7,12 +7,22 @@ let logger = log4js.getLogger("cas-wapp");
 // --- Chat pages ---
 router.get("", (req, res) => {
   logger.info(`access to 'main' page`);
-  res.render("home", { ...hbsProperties, title: "CAS-WebApp" });
+  res.render("home", { ...hbsProperties, title: "Cas-WebApp" });
 });
 
 router.get("/snake", (req, res) => {
-  logger.info(`access to 'snake-game' page`);
-  res.render("snake", { ...hbsProperties, title: "Snake Game" });
+  logger.info(`access to 'snake' page`);
+  res.render("snake", { ...hbsProperties, title: "Snake" });
+});
+
+router.get("/ball", (req, res) => {
+  logger.info(`access to 'ball' page`);
+  res.render("ball", { ...hbsProperties, title: "Balls" });
+});
+
+router.get("/plotter", (req, res) => {
+  logger.info(`access to 'plotter' page`);
+  res.render("plotter", { ...hbsProperties, title: "Plotter" });
 });
 
 router.get("/about", (req, res) => {

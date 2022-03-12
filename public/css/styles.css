@@ -57,10 +57,14 @@ h2 {
   text-transform: uppercase;
 }
 
+p:not(:last-child) {
+  margin-bottom: 8px;
+}
+
 em {
   font-family: "Kalam", cursive;
   font-size: 1.4em;
-  color: blue;
+  color: #0000ff;
   margin-right: 0.1em;
 }
 
@@ -72,6 +76,22 @@ em {
   flex-direction: column;
 }
 
+.new::after {
+  content: "NEW";
+  color: #ff0000;
+  font-size: 12px;
+  background-color: #fdfda5;
+  border: 1px solid #ff0000;
+  font-weight: bold;
+  display: inline-block;
+  padding: 5px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: -12px -12px 0 0;
+  transform: rotate(10deg);
+}
+
 /* --- NEWS STYLES --- */
 
 .news-item li,
@@ -79,16 +99,20 @@ em {
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   border: 1px solid #c7c7c7;
   list-style: none;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
   padding: 10px;
   width: 80%;
+  position: relative;
 }
 
 .news-header {
   display: flex;
   flex-direction: row;
   align-items: baseline;
-  margin-bottom: 10px;
+}
+
+.news-title {
+  flex-grow: 1;
 }
 
 .news-date {
@@ -98,12 +122,11 @@ em {
   font-size: 12px;
 }
 
-.news-title {
-  flex-grow: 1;
-  margin-left: 10px;
+.news-title,
+.help-title {
+  margin: 0 0 10px 10px;
   text-decoration: solid underline #c7c7c7;
   text-underline-offset: 0.2em;
-
   /*
   display: list-item;
   list-style-type: disc;
@@ -121,7 +144,7 @@ em {
 
 img.portrait {
   width: 250px;
-  border: solid black 1px;
+  border: solid #000 1px;
   border-radius: 50%;
   /* box-shadow: 0px 5px 13px -5px rgba(0,0,0,0.50); /* */
 }

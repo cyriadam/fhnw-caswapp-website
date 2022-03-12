@@ -11,14 +11,25 @@
     <body>
         <div class="main-content">
             {{>header}}
-            <h2>Clicks & Tricks</h2> 
             <ul class="help-item">
                 <li>
-                    <div class="help-content">
-                        <p><strong>Don't trust javascript programmers...</strong></p>
-                        <p>All they do is promises but they never callback.</p>
-                    </div>  
-                </li>                
+                    <p class="help-title">Snake</strong></p>
+                    <section class="help-content new">
+                        <p>
+                        Use the <strong>left</strong> and <strong>right</strong> arrow keys to change the direction of the snake.<br/>
+                        Eat food to increase your score.<br/>
+                        Eat a bomb or bitting yourself will <strong>end</strong> the game!</p>
+                    </section>  
+                </li>     
+                <li>
+                    <p class="help-title">Plotter</strong></p>
+                    <section class="help-content new">
+                        <p>
+                        Enter the <strong>formula</strong> in the input field.<br/>
+                        Use the <strong>arrow</strong> keys to move the graph and the <strong>pageUp</strong> and <strong>pageDown</strong> keys to zoom in and out.
+                        </p>
+                    </section>  
+                </li>                  
             </ul>
         </div>
         {{>footer}}

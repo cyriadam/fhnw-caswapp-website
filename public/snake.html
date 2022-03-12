@@ -2,12 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/css/snake.css" />
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/game.css" />
     <script src="/js/snake.js"></script>
     <title>Snake Game</title>
   </head>
   <body onload="initGame()">
     <h2 class="game-title">Snake Game</h2>
+    <audio id="soundGameOn" src="/sounds/GAMEON.WAV"></audio>
+    <audio id="soundGameEnd" src="/sounds/GAMEEND.WAV"></audio>
+    <audio id="soundBlip1" src="/sounds/BLIP1.WAV"></audio>
     <article>
       <canvas class="game-canvas" width="400px" height="400px"></canvas>
     </article>

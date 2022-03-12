@@ -71,15 +71,8 @@ let bombs = [];
 // --- game functions ---
 const resetGame = () => {
   game = { ...game, score: 0, gameOver: false };
-  snake = snakeElt(up)([
-    blockElt(10)(10),
-    blockElt(10)(11),
-    blockElt(10)(12),
-    blockElt(10)(13),
-  ]);
-  food = blockElt(Math.floor(Math.random() * game.boundaries.x))(
-    Math.floor(Math.random() * game.boundaries.x)
-  );
+  snake = snakeElt(up)([blockElt(10)(10), blockElt(10)(11), blockElt(10)(12), blockElt(10)(13)]);
+  food = blockElt(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
   bombs = [];
 };
 
@@ -116,12 +109,8 @@ let heartBeat = () => {
       console.log(`add a new bomb over ${game.bombsMax - bombs.length} bombs`);
       let newBomb;
       do {
-        newBomb = blockElt(Math.floor(Math.random() * game.boundaries.x))(
-          Math.floor(Math.random() * game.boundaries.x)
-        );
-      } while (
-        [food, ...snake.body].some((elt) => blockEltEquals(elt)(newBomb))
-      );
+        newBomb = blockElt(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
+      } while ([food, ...snake.body].some((elt) => blockEltEquals(elt)(newBomb)));
       bombs.push(newBomb);
     }
   }, game.bombsInterval);
@@ -135,10 +124,7 @@ let heartBeat = () => {
       clearInterval(intervalGameId);
       clearInterval(intervalBombsId);
       // compute the new speed
-      game.speed =
-        game.speed > game.speedMin
-          ? game.speed * game.speedFactor
-          : game.speedMin;
+      game.speed = game.speed > game.speedMin ? game.speed * game.speedFactor : game.speedMin;
       heartBeat();
     }
     if (game.gameOver) {
@@ -151,16 +137,8 @@ let heartBeat = () => {
 };
 
 const turnClockwise = (clockwise) => {
-  if (clockwise)
-    snake.direction =
-      directionsClockwise[
-        directionsClockwise.findIndex((elt) => elt == snake.direction) + 1
-      ];
-  else
-    snake.direction =
-      directionsAntiClockwise[
-        directionsAntiClockwise.findIndex((elt) => elt == snake.direction) + 1
-      ];
+  if (clockwise) snake.direction = directionsClockwise[directionsClockwise.findIndex((elt) => elt == snake.direction) + 1];
+  else snake.direction = directionsAntiClockwise[directionsAntiClockwise.findIndex((elt) => elt == snake.direction) + 1];
 };
 
 const nextBoard = () => {
@@ -186,12 +164,8 @@ const nextBoard = () => {
     snake.body = [head, ...snake.body];
     // don't put the food on snake body or bombs
     do {
-      food = blockElt(Math.floor(Math.random() * game.boundaries.x))(
-        Math.floor(Math.random() * game.boundaries.x)
-      );
-    } while (
-      [...bombs, ...snake.body].some((elt) => blockEltEquals(elt)(food))
-    );
+      food = blockElt(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
+    } while ([...bombs, ...snake.body].some((elt) => blockEltEquals(elt)(food)));
   } else {
     snake.body = [head, ...snake.body.slice(0, -1)];
   }
@@ -223,37 +197,16 @@ const renderGame = (canvas) => {
   context.fillStyle = "red";
   // context.fillRect(1+food.x*cellWidth, 1+food.y*cellHeight, cellWidth-2, cellHeight-2);
   context.beginPath();
-  context.arc(
-    food.x * cellWidth + cellWidth / 2,
-    food.y * cellHeight + cellHeight / 2,
-    cellHeight / 2,
-    0,
-    Math.PI * 2,
-    true
-  );
+  context.arc(food.x * cellWidth + cellWidth / 2, food.y * cellHeight + cellHeight / 2, cellHeight / 2, 0, Math.PI * 2, true);
   context.fill();
 
   // -- render snake head
   context.fillStyle = "green";
-  context.fillRect(
-    1 + snake.body[0].x * cellWidth,
-    1 + snake.body[0].y * cellHeight,
-    cellWidth - 2,
-    cellHeight - 2
-  );
+  context.fillRect(1 + snake.body[0].x * cellWidth, 1 + snake.body[0].y * cellHeight, cellWidth - 2, cellHeight - 2);
 
   // -- render snake body
   context.fillStyle = "cyan";
-  snake.body
-    .slice(1)
-    .forEach((elt) =>
-      context.fillRect(
-        1 + elt.x * cellWidth,
-        1 + elt.y * cellHeight,
-        cellWidth - 2,
-        cellHeight - 2
-      )
-    );
+  snake.body.slice(1).forEach((elt) => context.fillRect(1 + elt.x * cellWidth, 1 + elt.y * cellHeight, cellWidth - 2, cellHeight - 2));
 
   // -- render the bombs
   bombs.forEach((elt) => {
