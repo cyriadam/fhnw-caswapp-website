@@ -1,3 +1,9 @@
+//!\ requiered lambda.js
+
+// --- local lambda exp ---
+const width = fst;
+const height = snd;
+
 // --- elements ---
 let $canvas;
 let $input;
@@ -8,38 +14,6 @@ let red = "rgb(255,0,0)";
 let grayDark = "rgb(68,68,68)";
 let grayLight = "rgb(184,184,184)";
 
-// --- lamba exp ---
-let id = (x) => x;
-let Pair = (x) => (y) => (f) => f(x)(y);
-let fst = (x) => (y) => x;
-let snd = (x) => (y) => y;
-let PairEquals = (x) => (y) => x(fst) === y(fst) && x(snd) === y(snd);
-let left = (x) => (l) => (r) => l(x);
-let right = (x) => (l) => (r) => r(x);
-let either = (e) => (l) => (r) => e(l)(r);
-let eq = (y) => (x) => x == y;
-let gt = (y) => (x) => x > y;
-let ge = (y) => (x) => x >= y;
-let flip = (p) => (x) => (y) => p(y)(x);
-let not = flip;
-let lt = not(gt);
-let le = not(ge);
-let neq = not(eq);
-let inc = (x) => (y) => x + y;
-const boucle = (x) => (p) => x > 0 ? (p(), boucle(x - 1)(p)) : null;
-const tantQue = (x) => (c) => (n) => (p) => c(x) ? (p(x), tantQue(n(x))(c)(n)(p)) : null;
-const ifelse = (c) => (x) => (y) => c(x)(y) ? right(fst(x)(y)) : left(fst(x)(y));
-const compare = (c) => (x) => (y) => c(x)(y) ? snd(x)(y) : fst(x)(y);
-/*
-const safeDiv = x => y => y===0? left("can not divide by 0"):right({x, y, r:x/y});
-either(safeDiv(3)(2))(x=>console.error(x))(({x, y, r})=>console.log(`${x}/${y}=${r}`));
-boucle(3)( _ => { console.log(`boucle()`)});
-tantQue(0)(not(gt)(3))(inc(1))(x => { console.log(`tantQue(${x})`)});
-ifelse(gt)(2)(3)((x) => console.log(`case1 : ${x}`))((x) => console.log(`case2 : ${x}`));
-console.log(`max = ${compare(gt)(2)(3)}`);
-console.log(`min = ${compare(lt)(3)(5)}`);
- */
-
 // --- testCases ---
 let testCases = [];
 
@@ -47,9 +21,20 @@ const runTests = () => {
   try {
     // -- add testcases
     testCases.push(() => {
-      return true;
+      initSheet();
+      plotterFunction("x*x");
+      return sheet.functionValid;
     });
-
+    testCases.push(() => {
+      // -- diseable the alert --
+      let alertBackup = alert;
+      alert = () => {};
+      initSheet();
+      plotterFunction("x*x+c");
+      // -- enable alert --
+      alert = alertBackup;
+      return !sheet.functionValid;
+    });
     // -- run testcases
     let testCasesResults = testCases.map((elt) => elt());
     testCasesResults.forEach((elt, i) => {
@@ -66,38 +51,43 @@ const runTests = () => {
 
 let sheet = {
   axes: { xMin: -10, xMax: 10, yMin: -5, yMax: 5 },
-  cellSize: { width: 20, height: 20 },
+  cellSize: pair(20)(20),
   functionString: "Math.cos(x)",
   function: Function("x", `return Math.cos(x)`),
+  functionValid: true,
 };
 
 // --- game functions ---
 const init = () => {
-  try {
-    // -- perform the testcases
-    if (!runTests()) throw new Error("game engine errors detected");
-
-    // -- start the game
-    $canvas = document.querySelector(".plotter-canvas");
-    $input = document.querySelector(".plotter-function");
-
-    initSheet();
-    run();
-  } catch (e) {
-    console.error(e);
-    alert(e.message);
-  }
+  either(
+    (() => {
+      // -- perform the testcases
+      $canvas = document.querySelector(".plotter-canvas");
+      $input = document.querySelector(".plotter-function");
+      return $canvas == null || $input == null || !runTests() ? Left("plotter engine errors detected") : Right();
+    })()
+  )((err) => {
+    alert(err);
+  })(() => {
+    // -- render the function
+    try {
+      initSheet();
+      run();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 };
 
 const initSheet = () => {
-  sheet.cellSize.width = $canvas.width / (sheet.axes.xMax - sheet.axes.xMin);
-  sheet.cellSize.height = $canvas.height / (sheet.axes.yMax - sheet.axes.yMin);
+  sheet = { ...sheet, functionString: "Math.cos(x)", function: Function("x", `return Math.cos(x)`), functionValid: true };
+  sheet.cellSize = pair($canvas.width / (sheet.axes.xMax - sheet.axes.xMin))($canvas.height / (sheet.axes.yMax - sheet.axes.yMin));
 };
 
 let run = () => {
   // register events
   window.addEventListener("keydown", ({ key }) => {
-    if (!inputHasfocus) {
+    if (!inputHasfocus && sheet.functionValid) {
       if (key === "PageUp") return zoomSheet(1 / 2);
       if (key === "PageDown") return zoomSheet(2);
       if (key === "ArrowLeft") return moveSheet(-1, 0);
@@ -124,25 +114,23 @@ const plotterFunction = (f) => {
     sheet.function = Function("x", `return ${f}`);
     let r = sheet.function(0); // validation function
     if (debug) console.log(`${f}(0)=${toNDecimal(r)}`);
-    $input.classList.remove("error");
+    sheet.functionValid = true;
     sheet.functionString = f;
-    renderSheet();
   } catch (e) {
-    $input.classList.add("error");
+    sheet.functionValid = false;
     if (debug) console.error(e.message);
-    alert(e);
   }
+  renderSheet();
 };
 
 const zoomSheet = (factor) => {
-  (sheet.axes = {
+  sheet.axes = {
     xMin: sheet.axes.xMin * factor,
     xMax: sheet.axes.xMax * factor,
     yMin: sheet.axes.yMin * factor,
     yMax: sheet.axes.yMax * factor,
-  }),
-    (sheet.cellSize.width = $canvas.width / (sheet.axes.xMax - sheet.axes.xMin));
-  sheet.cellSize.height = $canvas.height / (sheet.axes.yMax - sheet.axes.yMin);
+  };
+  sheet.cellSize = pair($canvas.width / (sheet.axes.xMax - sheet.axes.xMin))($canvas.height / (sheet.axes.yMax - sheet.axes.yMin));
   renderSheet();
 };
 
@@ -158,16 +146,23 @@ const moveSheet = (x, y) => {
 
 const convertToCanvas = (x, y, deltaX = 0, deltaY = 0) => {
   return {
-    x: (0 - sheet.axes.xMin + x) * sheet.cellSize.width + deltaX,
-    y: (sheet.axes.yMax - y) * sheet.cellSize.height - deltaY,
+    x: (0 - sheet.axes.xMin + x) * width(sheet.cellSize) + deltaX,
+    y: (sheet.axes.yMax - y) * height(sheet.cellSize) - deltaY,
   };
 };
 
 const toNDecimal = (x, y = 2) => Math.round(x * Math.pow(10, y)) / Math.pow(10, y);
 
 const renderSheet = () => {
+  // -- check if the function is valid
+  if (!sheet.functionValid) {
+    if (!$input.classList.contains("error")) $input.classList.add("error");
+    return alert("The function is not valid!");
+  } else if ($input.classList.contains("error")) $input.classList.remove("error");
+
+  // -- render the function
   let context = $canvas.getContext("2d");
-  if (debug) console.log(sheet.cellSize);
+  if (debug) console.log(sheet.cellSize(pairValues));
 
   // -- clear the screen
   context.fillStyle = "white";
@@ -187,14 +182,14 @@ const renderSheet = () => {
   context.fillStyle = black;
   context.font = "10px sans-serif";
   tantQue(sheet.axes.xMin)(lt(sheet.axes.xMax))(inc(1))((i) => {
-    if (sheet.cellSize.width > 10 && sheet.cellSize.height > 10) context.fillText(i, ...Object.values(convertToCanvas(i, 0, 3, -10)));
+    if (width(sheet.cellSize) > 10 && height(sheet.cellSize) > 10) context.fillText(i, ...Object.values(convertToCanvas(i, 0, 3, -10)));
     context.beginPath();
     context.moveTo(...Object.values(convertToCanvas(i, 0, 0, -2)));
     context.lineTo(...Object.values(convertToCanvas(i, 0, 0, 2)));
     context.stroke();
   });
   tantQue(sheet.axes.yMin)(lt(sheet.axes.yMax))(inc(1))((i) => {
-    if (sheet.cellSize.width > 10 && sheet.cellSize.height > 10) context.fillText(i, ...Object.values(convertToCanvas(0, i, 3, -10)));
+    if (width(sheet.cellSize) > 10 && height(sheet.cellSize) > 10) context.fillText(i, ...Object.values(convertToCanvas(0, i, 3, -10)));
     context.beginPath();
     context.moveTo(...Object.values(convertToCanvas(0, i, -2, 0)));
     context.lineTo(...Object.values(convertToCanvas(0, i, 2, 0)));
@@ -206,14 +201,14 @@ const renderSheet = () => {
   context.strokeStyle = grayLight;
   context.beginPath();
   context.moveTo(...Object.values(convertToCanvas(sheet.axes.xMin, sheet.function(sheet.axes.xMin))));
-  tantQue(sheet.axes.xMin)(le(sheet.axes.xMax))(inc(5 / sheet.cellSize.width))((i) => {
+  tantQue(sheet.axes.xMin)(le(sheet.axes.xMax))(inc(5 / width(sheet.cellSize)))((i) => {
     context.lineTo(...Object.values(convertToCanvas(i, sheet.function(i))));
   });
   context.stroke();
   context.closePath();
 
   // draw the dots
-  if (sheet.cellSize.width > 20 && sheet.cellSize.height > 20) {
+  if (width(sheet.cellSize) > 20 && height(sheet.cellSize) > 20) {
     tantQue(sheet.axes.xMin)(le(sheet.axes.xMax))(inc(0.25))((i) => {
       context.beginPath();
       context.fillStyle = red;

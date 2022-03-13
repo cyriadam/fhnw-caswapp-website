@@ -1,29 +1,12 @@
+//!\ requiered lambda.js
+
 // --- elements ---
 let $canvas;
 let debug = false;
 
-// --- lamba exp ---
-let id = (x) => x;
-let Pair = (x) => (y) => (f) => f(x)(y);
-let fst = (x) => (y) => x;
-let snd = (x) => (y) => y;
-let PairEquals = (x) => (y) => x(fst) === y(fst) && x(snd) === y(snd);
-let left = (x) => (l) => (r) => l(x);
-let right = (x) => (l) => (r) => r(x);
-let either = (e) => (l) => (r) => e(l)(r);
-let eq = (y) => (x) => x == y;
-let gt = (y) => (x) => x > y;
-let ge = (y) => (x) => x >= y;
-let flip = (p) => (x) => (y) => p(y)(x);
-let not = flip;
-let lt = not(gt);
-let le = not(ge);
-let neq = not(eq);
-let inc = (x) => (y) => x + y;
-const boucle = (x) => (p) => x > 0 ? (p(), boucle(x - 1)(p)) : null;
-const tantQue = (x) => (c) => (n) => (p) => c(x) ? (p(x), tantQue(n(x))(c)(n)(p)) : null;
-const ifelse = (c) => (x) => (y) => c(x)(y) ? right(fst(x)(y)) : left(fst(x)(y));
-const compare = (c) => (x) => (y) => c(x)(y) ? snd(x)(y) : fst(x)(y);
+// --- local lambda exp ---
+const x = fst;
+const y = snd;
 
 // --- testCases ---
 let testCases = [];
@@ -34,45 +17,46 @@ const runTests = () => {
     let ball = createBall();
     ball.radius = game.cellWidth / 2;
 
+    // testCases.push((_) => false);
     testCases.push(() => {
       // ball moving
       ball = { ...ball, coord: { x: 10, y: 10 }, delta: { x: 0, y: 0 } };
-      let ballCordBefore = Pair(ball.coord.x)(ball.coord.y);
+      let ballCordBefore = pair(ball.coord.x)(ball.coord.y);
       // console.log(JSON.stringify(ball));
       nextBoard(ball);
       // console.log(JSON.stringify(ball));
-      let ballCordAfter = Pair(ball.coord.x)(ball.coord.y);
-      return !PairEquals(ballCordBefore)(ballCordAfter);
+      let ballCordAfter = pair(ball.coord.x)(ball.coord.y);
+      return !pairEquals(ballCordBefore)(ballCordAfter);
     });
     testCases.push(() => {
       // ball hurts bottom
       ball = { ...ball, coord: { x: 10, y: 0 }, delta: { x: 0, y: -1 } };
-      let ballDeltaBefore = Pair(ball.delta.x)(ball.delta.y);
+      let ballDeltaBefore = pair(ball.delta.x)(ball.delta.y);
       // console.log(JSON.stringify(ball));
       nextBoard(ball);
       // console.log(JSON.stringify(ball));
-      let ballDeltaAfter = Pair(ball.delta.x)(ball.delta.y);
-      return ballDeltaBefore(snd) < 0 && ballDeltaAfter(snd) > 0;
+      let ballDeltaAfter = pair(ball.delta.x)(ball.delta.y);
+      return y(ballDeltaBefore) < 0 && y(ballDeltaAfter) > 0;
     });
     testCases.push(() => {
       // ball hurts right boundary
       ball = { ...ball, coord: { x: game.boundaries.x, y: 0 }, delta: { x: 1, y: 0 } };
-      let ballDeltaBefore = Pair(ball.delta.x)(ball.delta.y);
+      let ballDeltaBefore = pair(ball.delta.x)(ball.delta.y);
       // console.log(JSON.stringify(ball));
       nextBoard(ball);
       // console.log(JSON.stringify(ball));
-      let ballDeltaAfter = Pair(ball.delta.x)(ball.delta.y);
-      return ballDeltaBefore(fst) > 0 && ballDeltaAfter(fst) < 0;
+      let ballDeltaAfter = pair(ball.delta.x)(ball.delta.y);
+      return x(ballDeltaBefore) > 0 && x(ballDeltaAfter) < 0;
     });
     testCases.push(() => {
       // ball hurts left boundary
       ball = { ...ball, coord: { x: 0, y: 0 }, delta: { x: -1, y: 0 } };
-      let ballDeltaBefore = Pair(ball.delta.x)(ball.delta.y);
+      let ballDeltaBefore = pair(ball.delta.x)(ball.delta.y);
       // console.log(JSON.stringify(ball));
       nextBoard(ball);
       // console.log(JSON.stringify(ball));
-      let ballDeltaAfter = Pair(ball.delta.x)(ball.delta.y);
-      return ballDeltaBefore(fst) < 0 && ballDeltaAfter(fst) > 0;
+      let ballDeltaAfter = pair(ball.delta.x)(ball.delta.y);
+      return x(ballDeltaBefore) < 0 && x(ballDeltaAfter) > 0;
     });
 
     // -- run testcases
@@ -136,25 +120,31 @@ const createBall = (id) => {
 
 // --- game functions ---
 const init = () => {
-  try {
-    // -- perform the testcases
-    if (!runTests()) throw new Error("game engine errors detected");
-
+  either(
+    (() => {
+      // -- perform the testcases
+      $canvas = document.querySelector(".ball-canvas");
+      return $canvas == null || !runTests() ? Left("game engine errors detected") : Right($canvas);
+    })()
+  )((err) => {
+    // -- error testcases or dom missing eelements
+    alert(err);
+  })((canvas) => {
     // -- start the game
-    $canvas = document.querySelector(".ball-canvas");
-
-    initGame($canvas);
-    run($canvas);
-  } catch (e) {
-    alert(e.message);
-  }
+    try {
+      initGame(canvas);
+      run(canvas);
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 };
 
 const initGame = (canvas) => {
   game.cellWidth = canvas.width / game.boundaries.x;
   game.cellHeight = canvas.height / game.boundaries.y;
   balls = [];
-  for (let i = 0; i < 15; i++) balls.push(createBall(i));
+  tantQue(0)(lt(15))(inc(1))((i) => balls.push(createBall(i)));
   // console.log(JSON.stringify(game));
 
   // -- clear the screen

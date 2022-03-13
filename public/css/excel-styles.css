@@ -1,0 +1,51 @@
+/* EXCEL COMPONENTS */
+
+.excel-sheet {
+  padding: 10px;
+  border-spacing: 10px;
+  margin-bottom: 8px;
+}
+
+.data-container input {
+  text-align: center;
+  border: 1px solid #e6e6e6;
+  padding: 10px;
+  outline: none;
+  width: 200px;
+}
+
+.data-container input:hover {
+  cursor: pointer;
+}
+.data-container input:focus {
+  cursor: text;
+}
+
+.data-container input:hover,
+.data-container input:focus {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border-color: #b7b7b7;
+  transition: padding 0.1s, box-shadow 0.1s, border-color 0.1s;
+}
+
+.button-calculate {
+  padding: 10px 20px;
+  background-color: #fff;
+  border: 1px solid #c7c7c7;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.button-calculate:hover {
+  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
+  border-color: #b7b7b7;
+  transition: padding 0.1s, box-shadow 0.1s, border-color 0.1s;
+}
+
+.button-calculate:active {
+  transform: scale(0.98);
+}
+
+.updated {
+  color: #008000;
+  font-weight: bold;
+}

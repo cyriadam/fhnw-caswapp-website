@@ -1,3 +1,11 @@
+//!\ requiered lambda.js
+
+let debug = false;
+
+// --- local lambda exp ---
+const x = fst;
+const y = snd;
+
 // --- elements ---
 let $canvasGame;
 
@@ -9,22 +17,22 @@ const runTests = () => {
     // -- add testcases
     testCases.push(() => {
       // testcase 1 : check compare blocks
-      let b1 = blockElt(5)(6);
-      let b2 = blockElt(5)(6);
-      return blockEltEquals(b1)(b2);
+      let b1 = pair(5)(6);
+      let b2 = pair(5)(6);
+      return pairEquals(b1)(b2);
     });
     testCases.push(() => {
       // testcase 2 : check compare blocks
-      let b1 = blockElt(5)(6);
-      let b2 = blockElt(5)(7);
-      return !blockEltEquals(b1)(b2);
+      let b1 = pair(5)(6);
+      let b2 = pair(5)(7);
+      return !pairEquals(b1)(b2);
     });
     testCases.push(() => {
-      // testcase 3 : move snake up
-      food = blockElt(5)(5);
-      snake = snakeElt(up)([blockElt(0)(10), blockElt(0)(11), blockElt(0)(12)]);
+      // testcase 3 : move snake d_up
+      food = pair(5)(5);
+      snake = snakeElt(d_up)([pair(0)(10), pair(0)(11), pair(0)(12)]);
       nextBoard();
-      return blockEltEquals(snake.body[0])(blockElt(0)(9));
+      return pairEquals(snake.body[0])(pair(0)(9));
     });
 
     // -- run testcases
@@ -40,22 +48,22 @@ const runTests = () => {
 };
 
 // --- game definition ---
-const up = 1;
-const right = 2;
-const down = 3;
-const left = 4;
-let directionsClockwise = [up, right, down, left, up];
-let directionsAntiClockwise = [up, left, down, right, up];
+const d_up = 1;
+const d_right = 2;
+const d_down = 3;
+const d_left = 4;
+let directionsClockwise = [d_up, d_right, d_down, d_left, d_up];
+let directionsAntiClockwise = [d_up, d_left, d_down, d_right, d_up];
 
 // --- game elements ---
-let blockElt = (x) => (y) => ({ x, y });
-let blockEltEquals = (b1) => (b2) => b1.x === b2.x && b1.y === b2.y;
 let snakeElt = (direction) => (body) => ({ direction, body });
 
 let game = {
   score: 0,
   gameOver: false,
   boundaries: { x: 20, y: 20 },
+  cellWidth: 0,
+  cellHeight: 0,
   speedInterval: 10000, // increase speed evey x msec
   speed: 1000, // game rendering speed
   speedMin: 100, // min speed
@@ -69,48 +77,55 @@ let snake = {};
 let bombs = [];
 
 // --- game functions ---
-const resetGame = () => {
-  game = { ...game, score: 0, gameOver: false };
-  snake = snakeElt(up)([blockElt(10)(10), blockElt(10)(11), blockElt(10)(12), blockElt(10)(13)]);
-  food = blockElt(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
+const resetGame = (canvas) => {
+  game = { ...game, score: 0, gameOver: false, cellWidth: canvas.width / game.boundaries.x, cellHeight: canvas.height / game.boundaries.y };
+  snake = snakeElt(d_up)([pair(10)(10), pair(10)(11), pair(10)(12), pair(10)(13)]);
+  food = pair(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
   bombs = [];
 };
 
-const initGame = () => {
-  try {
-    // -- perform the testcases
-    if (!runTests()) throw new Error("game engine errors detected");
+const init = () => {
+  either(
+    (() => {
+      // -- perform the testcases
+      $canvasGame = document.querySelector(".game-canvas");
+      return $canvasGame == null || !runTests() ? Left("game engine errors detected") : Right($canvasGame);
+    })()
+  )((err) => {
+    // -- error testcases or dom missing eelements
+    alert(err);
+  })((canvas) => {
+    try {
+      // -- initialise the game
+      resetGame(canvas);
 
-    // -- initialise the game
-    resetGame();
-    $canvasGame = document.querySelector(".game-canvas");
+      // register keydown events
+      window.addEventListener("keydown", (e) => {
+        // console.log(`e.key=${e.key}`);
+        if (e.key === "ArrowRight") turnClockwise(true);
+        else if (e.key === "ArrowLeft") turnClockwise(false);
+      });
 
-    // register keydown events
-    window.addEventListener("keydown", (e) => {
-      // console.log(`e.key=${e.key}`);
-      if (e.key === "ArrowRight") turnClockwise(true);
-      else if (e.key === "ArrowLeft") turnClockwise(false);
-    });
-
-    // start the game
-    document.getElementById("soundGameOn").play();
-    heartBeat();
-  } catch (e) {
-    alert(e.message);
-  }
+      // start the game
+      if (!debug) document.getElementById("soundGameOn").play();
+      heartBeat(canvas);
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 };
 
-let heartBeat = () => {
+let heartBeat = (canvas) => {
   let timeReference = Date.now();
 
   // Bombs heartBeat
   let intervalBombsId = setInterval(() => {
     if (bombs.length < game.bombsMax) {
-      console.log(`add a new bomb over ${game.bombsMax - bombs.length} bombs`);
+      if (debug) console.log(`add a new bomb over ${game.bombsMax - bombs.length} bombs`);
       let newBomb;
       do {
-        newBomb = blockElt(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
-      } while ([food, ...snake.body].some((elt) => blockEltEquals(elt)(newBomb)));
+        newBomb = pair(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
+      } while ([food, ...snake.body].some((elt) => pairEquals(elt)(newBomb)));
       bombs.push(newBomb);
     }
   }, game.bombsInterval);
@@ -118,19 +133,19 @@ let heartBeat = () => {
   // Game heartBeat
   let intervalGameId = setInterval(() => {
     nextBoard();
-    renderGame($canvasGame);
+    renderGame(canvas);
     if (Date.now() - timeReference >= game.speedInterval) {
       timeReference = Date.now();
       clearInterval(intervalGameId);
       clearInterval(intervalBombsId);
       // compute the new speed
       game.speed = game.speed > game.speedMin ? game.speed * game.speedFactor : game.speedMin;
-      heartBeat();
+      heartBeat(canvas);
     }
     if (game.gameOver) {
       clearInterval(intervalGameId);
       clearInterval(intervalBombsId);
-      document.getElementById("soundGameEnd").play();
+      if (!debug) document.getElementById("soundGameEnd").play();
       alert(`Game Over, your score is ${game.score}`);
     }
   }, game.speed);
@@ -142,12 +157,13 @@ const turnClockwise = (clockwise) => {
 };
 
 const nextBoard = () => {
-  // -- move the snake head
-  let head = { ...snake.body[0] }; //!\ copy the head
+  //
+  let head = snake.body[0](pairValues);
+
   // move the snake head
-  if (snake.direction == up) head.y--;
-  else if (snake.direction == right) head.x++;
-  else if (snake.direction == down) head.y++;
+  if (snake.direction == d_up) head.y--;
+  else if (snake.direction == d_right) head.x++;
+  else if (snake.direction == d_down) head.y++;
   else head.x--;
 
   // manage game boundaries
@@ -156,29 +172,31 @@ const nextBoard = () => {
   if (head.y < 0) head.y = game.boundaries.y - 1;
   else if (head.y >= game.boundaries.y) head.y = 0;
 
+  head = pair(head.x)(head.y);
+
   // collision with food detection
-  if (blockEltEquals(food)(head)) {
-    document.getElementById("soundBlip1").play();
-    console.log("> collision with food");
+  if (pairEquals(food)(head)) {
+    if (!debug) document.getElementById("soundBlip1").play();
+    if (debug) console.log("> collision with food");
     game.score++;
     snake.body = [head, ...snake.body];
     // don't put the food on snake body or bombs
     do {
-      food = blockElt(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
-    } while ([...bombs, ...snake.body].some((elt) => blockEltEquals(elt)(food)));
+      food = pair(Math.floor(Math.random() * game.boundaries.x))(Math.floor(Math.random() * game.boundaries.x));
+    } while ([...bombs, ...snake.body].some((elt) => pairEquals(elt)(food)));
   } else {
     snake.body = [head, ...snake.body.slice(0, -1)];
   }
 
   // collision with snake body detection
-  if (snake.body.slice(1).some((elt) => blockEltEquals(elt)(head))) {
-    console.log("> collision with snake body");
+  if (snake.body.slice(1).some((elt) => pairEquals(elt)(head))) {
+    if (debug) console.log("> collision with snake body");
     game.gameOver = true;
   }
 
   // collision with bombs detection
-  if (bombs.some((elt) => blockEltEquals(elt)(head))) {
-    console.log("> collision with bombs");
+  if (bombs.some((elt) => pairEquals(elt)(head))) {
+    if (debug) console.log("> collision with bombs");
     game.gameOver = true;
   }
 };
@@ -190,23 +208,19 @@ const renderGame = (canvas) => {
   context.fillRect(0, 0, canvas.width, canvas.height);
   // console.log(game.speed, JSON.stringify(snake));
 
-  // -- render game elements
-  let cellWidth = canvas.width / game.boundaries.x;
-  let cellHeight = canvas.height / game.boundaries.y;
   // -- render food
   context.fillStyle = "red";
-  // context.fillRect(1+food.x*cellWidth, 1+food.y*cellHeight, cellWidth-2, cellHeight-2);
   context.beginPath();
-  context.arc(food.x * cellWidth + cellWidth / 2, food.y * cellHeight + cellHeight / 2, cellHeight / 2, 0, Math.PI * 2, true);
+  context.arc(x(food) * game.cellWidth + game.cellWidth / 2, y(food) * game.cellHeight + game.cellHeight / 2, game.cellHeight / 2, 0, Math.PI * 2, true);
   context.fill();
 
   // -- render snake head
   context.fillStyle = "green";
-  context.fillRect(1 + snake.body[0].x * cellWidth, 1 + snake.body[0].y * cellHeight, cellWidth - 2, cellHeight - 2);
+  context.fillRect(1 + x(snake.body[0]) * game.cellWidth, 1 + y(snake.body[0]) * game.cellHeight, game.cellWidth - 2, game.cellHeight - 2);
 
   // -- render snake body
   context.fillStyle = "cyan";
-  snake.body.slice(1).forEach((elt) => context.fillRect(1 + elt.x * cellWidth, 1 + elt.y * cellHeight, cellWidth - 2, cellHeight - 2));
+  snake.body.slice(1).forEach((elt) => context.fillRect(1 + x(elt) * game.cellWidth, 1 + y(elt) * game.cellHeight, game.cellWidth - 2, game.cellHeight - 2));
 
   // -- render the bombs
   bombs.forEach((elt) => {
@@ -214,10 +228,10 @@ const renderGame = (canvas) => {
     context.lineCap = "round";
     context.strokeStyle = "red";
     context.beginPath();
-    context.moveTo(1 + elt.x * cellWidth, 1 + elt.y * cellHeight);
-    context.lineTo((elt.x + 1) * cellWidth - 1, (elt.y + 1) * cellHeight - 1);
-    context.moveTo(1 + elt.x * cellWidth, (elt.y + 1) * cellHeight - 1);
-    context.lineTo((elt.x + 1) * cellWidth - 1, 1 + elt.y * cellHeight);
+    context.moveTo(1 + x(elt) * game.cellWidth, 1 + y(elt) * game.cellHeight);
+    context.lineTo((x(elt) + 1) * game.cellWidth - 1, (y(elt) + 1) * game.cellHeight - 1);
+    context.moveTo(1 + x(elt) * game.cellWidth, (y(elt) + 1) * game.cellHeight - 1);
+    context.lineTo((x(elt) + 1) * game.cellWidth - 1, 1 + y(elt) * game.cellHeight);
     context.stroke();
   });
 };

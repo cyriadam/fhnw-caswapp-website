@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/game.css" />
+    <link rel="stylesheet" href="/css/excel-styles.css" />
+    <script src="/js/lambda.js"></script>
+    <script src="/js/excel.js"></script>
+    <title>Excel</title>
+    </head>
+    <body onload="init()">
+        <div class="main-content">
+            {{>header}}
+            <article>
+                <table class="game-canvas excel-sheet">
+                    <thead></thead>
+                    <tbody class="data-container">
+                        <tr>
+                            <td><input id="A1" value="A1"/></td>
+                            <td><input id="A2" value="A2"/></td>
+                        </tr>
+                        <tr>
+                            <td><input id="B1" value="B1"/></td>
+                            <td><input id="B2" value="B2"/></td>
+                        </tr>                       
+                    </tbody>
+                </table>
+                <button class="button-calculate">Calculate</button>
+            </article>
+        </div>
+        {{>footer}}
+    </body>
+</html>

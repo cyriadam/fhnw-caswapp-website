@@ -25,6 +25,11 @@ router.get("/plotter", (req, res) => {
   res.render("plotter", { ...hbsProperties, title: "Plotter" });
 });
 
+router.get("/excel", (req, res) => {
+  logger.info(`access to 'excel' page`);
+  res.render("excel", { ...hbsProperties, title: "Excel" });
+});
+
 router.get("/about", (req, res) => {
   logger.info(`access to 'about' page`);
   res.render("about", { ...hbsProperties, title: "About Me" });
