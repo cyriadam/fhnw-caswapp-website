@@ -160,7 +160,6 @@ let run = (canvas) => {
     renderGame(canvas);
     if (balls.every((ball) => !ball.enable)) {
       clearInterval(intervalGameId);
-      alert("The End");
     }
   }, game.framerate);
 };

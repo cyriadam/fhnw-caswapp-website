@@ -1,4 +1,5 @@
 //!\ requiered lambda.js
+//!\ requiered global.js
 
 // --- local lambda exp ---
 const width = fst;
@@ -62,6 +63,7 @@ const init = () => {
   either(
     (() => {
       // -- perform the testcases
+      popupDiseabled = true;
       $canvas = document.querySelector(".plotter-canvas");
       $input = document.querySelector(".plotter-function");
       return $canvas == null || $input == null || !runTests() ? Left("plotter engine errors detected") : Right();
@@ -70,6 +72,7 @@ const init = () => {
     alert(err);
   })(() => {
     // -- render the function
+    popupDiseabled = false;
     try {
       initSheet();
       run();
@@ -157,7 +160,7 @@ const renderSheet = () => {
   // -- check if the function is valid
   if (!sheet.functionValid) {
     if (!$input.classList.contains("error")) $input.classList.add("error");
-    return alert("The function is not valid!");
+    return popup("<h2>Error...</h2><p>The function is <em>not</em> valid!</p></h2>");
   } else if ($input.classList.contains("error")) $input.classList.remove("error");
 
   // -- render the function

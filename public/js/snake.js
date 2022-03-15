@@ -1,4 +1,5 @@
 //!\ requiered lambda.js
+//!\ requiered global.js
 
 let debug = false;
 
@@ -146,7 +147,7 @@ let heartBeat = (canvas) => {
       clearInterval(intervalGameId);
       clearInterval(intervalBombsId);
       if (!debug) document.getElementById("soundGameEnd").play();
-      alert(`Game Over, your score is ${game.score}`);
+      popup(`<h2>Game Over</h2><p>your score is <em>${game.score}</em></p>`);
     }
   }, game.speed);
 };
