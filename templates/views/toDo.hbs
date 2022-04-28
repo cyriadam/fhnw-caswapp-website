@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/toDo.css" />
+    <script src="/js/lambda.js"></script>
+    <script src="/js/observable.js"></script>
+    <script src="/js/toDo_m3.js"></script>
+    <script src="/js/test.js"></script>
+    <script src="/js/tests/toDo_m3Test.js"></script>
+    <title>ToDo List</title>
+    </head>
+    <body onload="init()">
+        <div class="main-content">
+            {{>header}}
+            <div class="holder">
+                <button id="plus" class="btn" autofocus onclick="toDoView.newToDo();"> + </button>
+                <div class="table" id="todoContainer"></div>
+                <p><br/></p>
+                <p>Tasks: <span id="numberOfTasks">0</span>, Open:  <span id="openTasks">0</span></p>
+            </div>
+        </div>
+        {{>footer}}
+<script>
+    toDoView = ToDoView(
+        document.querySelector('#todoContainer'), 
+        document.querySelector('#numberOfTasks'), 
+        document.querySelector('#openTasks')
+    );
+    toDoView.newToDo();
+</script>
+    </body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/lambda.js"></script>
+    <script src="/js/test.js"></script>
+    <script id="template-succeed" type="text/html">
+        <li class="succeed">
+        <div class="tat-item-container">
+        <p class="tat-item-title_succeed">${id}</p>
+        <p>All ${nb} test-cases succeed</p>
+        </div>
+        </li>
+    </script> 
+    <script id="template-failed" type="text/html">
+        <li class="failed">
+        <div class="tat-item-container">
+        <p class="tat-item-title_failed">${id}</p>
+        <p>${nbFails}/${nb} test-cases failed</p>
+        </div>
+        <div class="usecase-item-container">
+        ${failsInnerHtml}
+        </div>
+        </li>  
+    </script>
+    <script id="template-usecase" type="text/html">
+        <p class="usecase-title">test-case <span>#${id}</span> :</p>
+        <p class="usecase-desc">${desc}</p>
+    </script>
+    <title>TAT</title>
+    </head>
+    <body onload="renderTestsResults()">
+        <div class="main-content">
+            {{>header}}
+            <h2>Test of internal modules</h2>
+            <ul class="tat-items" id="tatContainer"></ul>
+        </div>
+        {{>footer}}
+    <!-- -------------------------------------------------- -->
+    <script>
+        const modules = [
+            'util',
+            'observable',
+            'toDo_m3'
+        ]
+        modules.forEach(module => {
+            document.write(`<script src="js/${module}.js"></s`+`cript>`);
+            document.write(`<script src="js/tests/${module}Test.js"></s`+`cript>`);
+        });
+
+        //!\ enclosed code is executed before the modules are loaded
+        let $tatContainer = document.querySelector("#tatContainer");
+
+        const renderTestsResults = () => {
+            allTat.render($tatContainer);
+        }
+    </script>
+    <!-- -------------------------------------------------- -->
+    </body>
+</html>

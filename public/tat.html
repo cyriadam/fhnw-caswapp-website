@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/game.css" />
+    <script src="/js/lambda.js"></script>
+    <script src="js/test.js"></script>
+    <script id="template-succeed" type="text/html">
+        <li class="succeed">
+        <div class="tat-item-container">
+        <p class="tat-item-title_succeed">${id}</p>
+        <p>All ${nb} test-cases succeed</p>
+        </div>
+        </li>
+    </script> 
+    <script id="template-failed" type="text/html">
+        <li class="failed">
+        <div class="tat-item-container">
+        <p class="tat-item-title_failed">${id}</p>
+        <p>${nbFails}/${nb} test-cases failed</p>
+        </div>
+        <div class="usecase-item-container">
+        ${failsInnerHtml}
+        </div>
+        </li>  
+    </script>
+    <script id="template-usecase" type="text/html">
+        <p class="usecase-title">test-case <span>#${id}</span> :</p>
+        <p class="usecase-desc">${desc}</p>
+    </script>
+    <title>TAT</title>
+</head>
+<body onload="renderTestsResults()">
+<h2 class="game-title">All Tests in HtmlJs</h2>
+
+<!--
+<ul class="tat-items">
+    <li class="succeed">
+        <div class="tat-item-container">
+            <p class="tat-item-title_succeed">Test case Module 1</p>
+            <p>All 2 test-cases succeed</p>
+        </div>
+    </li>  
+    <li class="failed">
+        <div class="tat-item-container">
+            <p class="tat-item-title_failed">Test case Module 3</p>
+            <p>2/3 test-cases failed</p>
+        </div>
+        <div class="usecase-item-container">
+            <p class="usecase-title">test-case <span>#300</span> :</p>
+            <p class="usecase-desc">description</p>
+        </div>
+    </li>  
+</ul>
+-->
+
+<ul class="tat-items" id="tatContainer"></ul>
+
+<script>
+    const modules = [
+        'util',
+        'observable',
+        'toDo_m3'
+    ]
+    modules.forEach(module => {
+        document.write(`<script src="js/${module}.js"></s`+`cript>`);
+        document.write(`<script src="js/tests/${module}Test.js"></s`+`cript>`);
+    });
+
+    //!\ enclosed code is executed before the modules are loaded
+    console.log('Running tat...');
+    let $tatContainer = document.querySelector("#tatContainer");
+
+    const renderTestsResults = () => {
+        allTat.render($tatContainer);
+    }
+</script>
+</body>
+</html>

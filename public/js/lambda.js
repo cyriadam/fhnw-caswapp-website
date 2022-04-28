@@ -13,6 +13,12 @@ const pairValues = (x) => (y) => ({ x, y });
 const pairEquals = (x) => (y) => fst(x) === fst(y) && snd(x) === snd(y);
 const pairPlus = (a) => (b) => pair(fst(a) + fst(b))(snd(a) + snd(b));
 
+// Tuple
+const Tuple = n => [
+  (...arg) => f => f(Object.seal(arg)),
+  ...Array.from({length:n}, (val, idx) => t => t(id)[idx])
+];
+
 // Either
 const Left = (x) => (l) => (r) => l(x);
 const Right = (x) => (l) => (r) => r(x);
@@ -29,8 +35,10 @@ const neq = not(eq);
 const inc = (x) => (y) => x + y;
 const boucle = (x) => (p) => x > 0 ? (p(), boucle(x - 1)(p)) : null;
 const tantQue = (x) => (c) => (n) => (p) => c(x) ? (p(x), tantQue(n(x))(c)(n)(p)) : null;
-const ifelse = (c) => (x) => (y) => c(x)(y) ? right(fst(x)(y)) : left(fst(x)(y));
+const ifelse = (c) => (x) => (y) => c(x)(y) ? Right(fst(x)(y)) : Left(fst(x)(y));
 const compare = (c) => (x) => (y) => c(x)(y) ? snd(x)(y) : fst(x)(y);
+
+
 
 /*
 // Tests

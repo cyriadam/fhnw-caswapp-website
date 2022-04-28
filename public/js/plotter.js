@@ -64,7 +64,8 @@ const init = () => {
     (() => {
       // -- perform the testcases
       popupDiseabled = true;
-      $canvas = document.querySelector(".plotter-canvas");
+      // $canvas = document.querySelector(".plotter-canvas");
+      $canvas = plotter_canvas; // equivalent to : $canvas = document.getElementById("plotter-canvas");
       $input = document.querySelector(".plotter-function");
       return $canvas == null || $input == null || !runTests() ? Left("plotter engine errors detected") : Right();
     })()

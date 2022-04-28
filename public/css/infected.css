@@ -1,0 +1,7 @@
+/* GAME COMPONENTS */
+
+
+.game-canvas:hover {
+  cursor: crosshair;
+  cursor: url("/img/injection.svg") 36 0, auto;
+}

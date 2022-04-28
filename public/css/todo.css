@@ -1,0 +1,32 @@
+.holder {
+  width: 80%;
+  padding: 2em;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border: 1px solid #c7c7c7;
+}
+
+input[type="text"] {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  font-size: 1.1em;
+  color: darkblue;
+  border-width: 0 0 1px 0;
+}
+input[type="text"]:focus {
+  border-color: orange;
+  outline: transparent none 0;
+}
+#todoContainer {
+  display: grid;
+  gap: 0.5em;
+  grid-template-columns: 2em auto auto;
+  margin-bottom: 0.5em;
+}
+#plus {
+  position: relative;
+  top: -1em;
+}
+.delete {
+  padding: 5px 10px;
+  color: red;
+  font-size: 1em;
+} 

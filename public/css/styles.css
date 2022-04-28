@@ -68,6 +68,23 @@ em {
   margin-right: 0.1em;
 }
 
+.btn {
+  padding: 10px 20px;
+  background-color: #fff;
+  border: 1px solid #c7c7c7;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.btn:hover {
+  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
+  border-color: #b7b7b7;
+  transition: padding 0.1s, box-shadow 0.1s, border-color 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
 /* --- GENERAL STYLES --- */
 
 .main-content {
@@ -76,6 +93,7 @@ em {
   flex-direction: column;
 }
 
+.failed::after,
 .new::after {
   content: "NEW";
   color: #ff0000;
@@ -92,8 +110,92 @@ em {
   transform: rotate(10deg);
 }
 
+.failed::after {
+  content: "ERROR";
+  color: #ff0000;
+  border: 1px solid #248f24;
+}
+
+/* --- TAT STYLES --- */
+
+.tat-item-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: baseline;
+}
+
+.usecase-item-container {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  align-items: baseline;
+  margin-top: 10px;
+  /* border: 1px solid #d3d3d3; */
+}
+
+.tat-item-container > p,
+.usecase-item-container > p {
+  margin: 0;
+}
+
+/* .tat-item-container > * {
+  border: 2px solid blue;
+} */
+
+.tat-item-title,
+.tat-item-title_succeed,
+.tat-item-title_failed {
+  padding-left: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+/* https://feathericons.com/ */
+.tat-item-title_succeed::before {
+  display: block;
+  content: "";
+  background-color: #248f24;
+  -webkit-mask-image: url("/img/check-circle.svg");
+  mask-image: url("/img/check-circle.svg");
+  width: 24px;
+  height: 24px;
+  float: left;
+  margin: 0 12px 0 0;
+}
+
+.tat-item-title_failed::before {
+  display: block;
+  content: "";
+  background-color: #ff0000;
+  -webkit-mask-image: url("/img/alert-triangle.svg");
+  mask-image: url("/img/alert-triangle.svg");
+  width: 24px;
+  height: 24px;
+  float: left;
+  margin-right: 12px;
+}
+
+p.usecase-title {
+  display: list-item;
+  list-style: disc outside none;
+  margin-left: 60px;
+  padding-left: 10px;
+}
+
+p.usecase-title span {
+  font-weight: bold;
+  display: inline-block;
+  width: 40px;
+  text-align: left;
+}
+
+.usecase-desc {
+  font-style: italic;
+}
+
 /* --- NEWS STYLES --- */
 
+.tat-items li,
 .news-item li,
 .help-item li {
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -103,6 +205,15 @@ em {
   padding: 10px;
   width: 80%;
   position: relative;
+}
+
+.tat-items .succeed {
+  box-shadow: rgba(121, 253, 143, 0.2) 0px 6px 18px;
+}
+
+.tat-items .failed {
+  box-shadow: rgba(255, 121, 121, 0.2) 0px 6px 18px;
+  border-color: #ff0000;
 }
 
 .news-header {

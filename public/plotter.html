@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="/css/game.css" />
     <link rel="stylesheet" href="/css/plotter-styles.css" />
     <script src="/js/lambda.js"></script>
+    <script src="/js/global.js"></script>
     <script src="/js/plotter.js"></script>
     <title>Plotter</title>
   </head>
   <body onload="init()">
     <h2 class="game-title">Plotter</h2>
     <article>
-      <canvas class="game-canvas plotter-canvas" width="800px" height="400px"></canvas>
+      <canvas id="plotter_canvas" class="game-canvas" width="800px" height="400px"></canvas>
       <p><input class="plotter-function" value="Math.cos(x)" /></p>
     </article>
   </body>

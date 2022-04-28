@@ -30,9 +30,27 @@ router.get("/excel", (req, res) => {
   res.render("excel", { ...hbsProperties, title: "Excel" });
 });
 
+router.get("/tat", (req, res) => {
+  logger.info(`access to 'tat' page`);
+  res.render("tat", { ...hbsProperties, title: "TAT" });
+});
+
+router.get("/toDo", (req, res) => {
+  logger.info(`access to 'toDo' page`);
+  res.render("toDo", { ...hbsProperties, title: "ToDo List" });
+});
+
 router.get("/about", (req, res) => {
   logger.info(`access to 'about' page`);
   res.render("about", { ...hbsProperties, title: "About Me" });
+});
+
+router.get("/test", (req, res) => {
+  res.render("test", { ...hbsProperties, title: "Test" });
+});
+
+router.get("/infected", (req, res) => {
+  res.render("infected", { ...hbsProperties, title: "Infected" });
 });
 
 router.get("/help", (req, res) => {

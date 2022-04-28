@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/game.css" />
+    <script src="/js/lambda.js"></script>
+    <script src="/js/observable.js"></script>
+    <script src="/js/mvc.js"></script>
+    <script src="/js/test.js"></script>
+    <script src="/js/tests/mvcTest.js"></script>
+    <title>ToDo List</title>
+  </head>
+  <body onload="init()">
+    <h2 class="game-title">MVC v.0</h2>
+    <h3>Test MCV Framework based on Observable...</h3>
+    <p></p>
+    <div>
+      <!-- 
+        <p><label>Name: </label><input id="name" type="text" onchange="((name) => {
+          alert(`you type[${name}]`);
+          toDoView.setName(name);
+          console.log('test...');
+          })(this.value)">
+        </p> 
+      -->
+      <p><label>Name: </label><input id="name" type="text" onchange="doSomething(this.value)"></p>
+      <p>Lg(name)=[<span id="name-lg"></span>]</p>
+      <p>Upper(name)=[<span id="name-upper"></span>]</p>
+    </div>
+    <script>
+
+      toDoView = ToDoView(
+        document.querySelector('#name'), 
+        document.querySelector('#name-lg'), 
+        document.querySelector('#name-upper'), 
+      )
+
+      // document.querySelector('#name').onchange=(e)=>{
+      //   toDoView.setName(e.target.value);
+      //   console.log('name is updated');
+      // };
+
+    </script>
+
+  </body>
+</html>

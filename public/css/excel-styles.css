@@ -28,23 +28,6 @@
   transition: padding 0.1s, box-shadow 0.1s, border-color 0.1s;
 }
 
-.button-calculate {
-  padding: 10px 20px;
-  background-color: #fff;
-  border: 1px solid #c7c7c7;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-}
-
-.button-calculate:hover {
-  box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
-  border-color: #b7b7b7;
-  transition: padding 0.1s, box-shadow 0.1s, border-color 0.1s;
-}
-
-.button-calculate:active {
-  transform: scale(0.98);
-}
-
 .updated {
   color: #008000;
   font-weight: bold;
