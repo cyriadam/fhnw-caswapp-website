@@ -40,6 +40,11 @@
                         Include <strong>TAT</strong> of internal modules and game engine
                     </p>  
                 </li>  
+            </ul>
+            <input id ="toggleLastMonths" class="hidden" type="checkbox" checked>
+            <label for="toggleLastMonths" class="toggle"> &nbsp; Last Months news</label>
+            <div class="collapsible">
+            <ul class="news-item">
                 <li>
                     <div class="news-header">
                         <p class="news-title">Release of <strong>Excel</strong></p>
@@ -90,7 +95,13 @@
                     </p>  
                 </li>
             </ul>
+            </div>
         </div>
         {{>footer}}
+<script type="module">
+    import { HomeView } from "./js/modules/home.js";
+    let homeView = HomeView();
+    homeView.addToggle(document.querySelector('#toggleLastMonths'));
+</script> 
     </body>
 </html>

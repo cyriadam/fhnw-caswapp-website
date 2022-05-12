@@ -5,31 +5,35 @@
     <link rel="icon" href="/img/favicon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/todo.css" />
-    <script src="/js/lambda.js"></script>
-    <script src="/js/observable.js"></script>
-    <script src="/js/toDo_m3.js"></script>
-    <script src="/js/test.js"></script>
-    <script src="/js/tests/toDo_m3Test.js"></script>
     <title>ToDo List</title>
     </head>
-    <body onload="init()">
+    <body>
         <div class="main-content">
             {{>header}}
             <div class="holder">
-                <button id="plus" class="btn" autofocus onclick="toDoView.newToDo();"> + </button>
+                <button id="plus" class="btn" autofocus> + </button>
+                <button id="fortune" class="btn"> fortune! </button>
+                <button id="listTasks" class="btn"> List Tasks </button>
                 <div class="table" id="todoContainer"></div>
                 <p><br/></p>
                 <p>Tasks: <span id="numberOfTasks">0</span>, Open:  <span id="openTasks">0</span></p>
             </div>
         </div>
         {{>footer}}
-<script>
-    toDoView = ToDoView(
+<script type="module">
+    import { ToDoView, init } from "./js/modules/toDo.js";
+    import { tatResults } from "./js/modules/tests/toDoTest.js";
+    init(tatResults);
+
+    let toDoView = ToDoView(
         document.querySelector('#todoContainer'), 
         document.querySelector('#numberOfTasks'), 
         document.querySelector('#openTasks')
     );
+    document.querySelector('#plus').onclick    = _ => toDoView.newToDo();
+    document.querySelector('#fortune').onclick    = _ => toDoView.newFortuneTodo();
+    document.querySelector('#listTasks').onclick    = _ => toDoView.listTasks();
     toDoView.newToDo();
-</script>
+</script>     
     </body>
 </html>

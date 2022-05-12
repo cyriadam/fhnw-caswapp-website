@@ -3,9 +3,8 @@
     <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/img/favicon.png" />
-    <link rel="stylesheet" href="/css/styles.css" />
-    <script src="/js/lambda.js"></script>
-    <script src="/js/test.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/game.css" />
     <script id="template-succeed" type="text/html">
         <li class="succeed">
         <div class="tat-item-container">
@@ -31,7 +30,7 @@
     </script>
     <title>TAT</title>
     </head>
-    <body onload="renderTestsResults()">
+    <body>
         <div class="main-content">
             {{>header}}
             <h2>Test of internal modules</h2>
@@ -39,24 +38,15 @@
         </div>
         {{>footer}}
     <!-- -------------------------------------------------- -->
-    <script>
-        const modules = [
-            'util',
-            'observable',
-            'toDo_m3'
-        ]
-        modules.forEach(module => {
-            document.write(`<script src="js/${module}.js"></s`+`cript>`);
-            document.write(`<script src="js/tests/${module}Test.js"></s`+`cript>`);
-        });
-
-        //!\ enclosed code is executed before the modules are loaded
-        let $tatContainer = document.querySelector("#tatContainer");
-
-        const renderTestsResults = () => {
-            allTat.render($tatContainer);
-        }
-    </script>
+<script type="module">
+    import { allTat }  from './js/modules/test.js';
+    import './js/modules/tests/utilTest.js';
+    import './js/modules/tests/observableTest.js';
+    // import './js/modules/tests/dataflowTest.js';     // PB due to promises ... 
+    import './js/modules/tests/toDoTest.js';
+    let $tatContainer = document.querySelector("#tatContainer");
+    allTat.render($tatContainer);
+</script>
     <!-- -------------------------------------------------- -->
     </body>
 </html>
