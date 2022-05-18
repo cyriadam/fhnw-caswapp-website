@@ -5,7 +5,7 @@
     <link rel="icon" href="/img/favicon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/todo.css" />
-    <title>ToDo List</title>
+    <title>ToDo List v1</title>
     </head>
     <body>
         <div class="main-content">
@@ -21,8 +21,8 @@
         </div>
         {{>footer}}
 <script type="module">
-    import { ToDoView, init } from "./js/modules/toDo.js";
-    import { tatResults } from "./js/modules/tests/toDoTest.js";
+    import { ToDoView, init } from "./js/modules/toDo-milestone1.js";
+    import { tatResults } from "./js/modules/tests/toDo-milestone1Test.js";
     init(tatResults);
 
     let toDoView = ToDoView(

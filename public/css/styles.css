@@ -84,7 +84,7 @@ em {
   transition: padding 0.1s, box-shadow 0.1s, border-color 0.1s;
 }
 
-.btn:active {
+.btn:not([disabled]):active {
   transform: scale(0.98);
 }
 

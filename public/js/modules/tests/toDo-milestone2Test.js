@@ -1,18 +1,21 @@
-import { tat } from "./../test.js";
-import { ToDoView } from "./../toDo.js";
+import { tat } from "../test.js";
+import { ToDoControler, TodoItemsView, TodoTotalView, TodoOpenView } from "../toDo-milestone2.js";
 
 export {tatResults}
 
-let tatResults=tat('Module TODO v3 / test-cases-1', (assert) => {
+let tatResults=tat('Module TODO milestone2 / test-cases-1', (assert) => {
   const todoContainer = document.createElement("div");
   const numberOfTasksContainer = document.createElement("div");
   const openTasksContainer = document.createElement("div");
-  let toDoView = ToDoView(todoContainer, numberOfTasksContainer, openTasksContainer);
-  toDoView.newToDo();
+  let toDoControler = ToDoControler();
+  let todoItemsView = TodoItemsView(toDoControler, todoContainer);
+  let todoTotalView = TodoTotalView(toDoControler, numberOfTasksContainer);
+  let todoOpenView = TodoOpenView(toDoControler, openTasksContainer);
+  toDoControler.addToDo();
   assert.equals(parseInt(numberOfTasksContainer.innerHTML), 1);
   assert.equals(parseInt(openTasksContainer.innerHTML), 1);
-  toDoView.newToDo();
-  toDoView.newToDo();
+  toDoControler.addToDo();
+  toDoControler.addToDo();
   assert.equals(parseInt(numberOfTasksContainer.innerHTML), 3);
   assert.equals(parseInt(openTasksContainer.innerHTML), 3);
   assert.equals(todoContainer.childElementCount, 9);

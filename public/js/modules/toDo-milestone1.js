@@ -6,7 +6,7 @@ import {fortuneService}             from "./fortuneService.js";
 export { ToDoView, init }
 
 let toDoView;
-let debug=true;
+let debug=false;
 
 const init = (tatResults) => {
   either(
@@ -34,6 +34,12 @@ const ToDoControler = () => {
     const createToDoItem = () => {
         const done = Observable(false);
         const text = Observable("New Task");
+        const textValid = Observable(true);
+        const textEditable = Observable(true);
+
+        text.onChange( text => textValid.setValue(text.length>3));
+        done.onChange( done => textEditable.setValue(!done));
+
         const toDoItem= {
             id:toDoSequence.next().value,
             setText: (val) => text.setValue(val),
@@ -42,6 +48,10 @@ const ToDoControler = () => {
             getDone: () => done.getValue(),
             setDone: (val) => done.setValue(val),
             onDoneChange: (subscriber) => done.onChange(subscriber),
+            onTextValidChange: (subscriber) => textValid.onChange(subscriber),
+            onTextEditableChange: (subscriber) => textEditable.onChange(subscriber),
+            getTextValid: () => textValid.getValue(),
+            getTextEditable: () => textEditable.getValue(),
         };
         return toDoItem;
     }
@@ -83,7 +93,7 @@ const ToDoControler = () => {
         getCountToDo: () => toDoList.count(),
         getCountToDoOpen: () => toDoList.countIf(item=>!item.getDone()),
         listTasks: () => {
-            toDoList.getList().forEach(task => console.log(task.getText()));
+            toDoList.getList().forEach(task => console.log(`Task(${task.id})=[${task.getText()}], valid=${String(task.getTextValid())}, editable=${String(task.getTextEditable())}`));
         }
     }
 }
@@ -126,7 +136,10 @@ const ToDoView = (todoContainer, numberOfTasks, openTasks) => {
         todoContainer.appendChild(checkboxItem);
 
         item.onTextChange((val) => inputItem.value=val);
-        inputItem.onchange=(e) => item.setText(inputItem.value);
+        inputItem.oninput=( _ => item.setText(inputItem.value));
+
+        item.onTextEditableChange((editable)=>editable?inputItem.removeAttribute("readonly"):inputItem.setAttribute("readonly", "true"));
+        item.onTextValidChange((valid)=>valid?inputItem.setCustomValidity(''):inputItem.setCustomValidity('The text is invalid'));
     }
 
     const removeRenderToDoItem = (item) => {
@@ -138,17 +151,18 @@ const ToDoView = (todoContainer, numberOfTasks, openTasks) => {
 
     const newToDo = () => {
         const toDoItem = toDoControler.newToDo();
-        toDoItem.onDoneChange(renderStatistics);
     }
 
     const newFortuneTodo = () => {
         const toDoItem = toDoControler.addFortuneTodo();
-        toDoItem.onDoneChange(renderStatistics);
     }
 
     toDoControler.onAddToDo(renderStatistics);
     toDoControler.onDelToDo(renderStatistics);
-    toDoControler.onAddToDo(renderToDoItem);
+    toDoControler.onAddToDo((item) => {
+        item.onDoneChange(renderStatistics);
+        renderToDoItem(item);
+    });
     toDoControler.onDelToDo(removeRenderToDoItem);
 
     return {

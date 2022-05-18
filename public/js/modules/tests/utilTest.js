@@ -9,8 +9,8 @@ tat('Module UTIL / test-cases-1', (assert) => {
     const r = (10).times(x => x*x);
     assert.equals(r.length, 10);
     assert.equals(r[0], 0);
-    assert.equals(r[2], 6, 'unexpected error!');
-    assert.equals(r[9], 82);
+    assert.equals(r[2], 4, 'unexpected error!');
+    assert.equals(r[9], 81);
 
     // --- test function 'Array.equals'
     assert.equals(Array.from({length:5}, (val, idx) => idx).equals(Array.from({length:5}, (val, idx) => idx)), true);

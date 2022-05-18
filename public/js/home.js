@@ -1,4 +1,4 @@
-import { Observable } from "./observable.js";
+import { Observable } from "./modules/observable.js";
 
 export { HomeView }
 

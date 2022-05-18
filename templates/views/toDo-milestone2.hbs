@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/img/favicon.png" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/todo.css" />
+    <title>ToDo List v2</title>
+    </head>
+    <body>
+        <div class="main-content">
+            {{>header}}
+            <div class="holder">
+                <button id="plus" class="btn" autofocus> + </button>
+                <button id="fortune" class="btn"> fortune! </button>
+                <button id="listTasks" class="btn"> List Tasks </button>
+                <div class="table" id="todoContainer"></div>
+                <br/>                
+                <button id="saveTasks" class="btn"> Save </button>
+                <button id="resetTasks" class="btn"> Reset </button>
+                <p><br/></p>                
+                <p>Tasks: <span id="numberOfTasks">0</span>, Open:  <span id="openTasks">0</span></p>
+            </div>
+        </div>
+        {{>footer}}
+<script type="module">
+    import { ToDoControler, TodoItemsView, TodoTotalView, TodoOpenView, TodoSaveView, init } from "./js/modules/toDo-milestone2.js";
+    import { tatResults } from "./js/modules/tests/toDo-milestone2Test.js";
+    init(tatResults);
+
+    let toDoControler = ToDoControler();
+    let toDoIitemsView = TodoItemsView(toDoControler, document.querySelector('#todoContainer'));
+    let todoTotalView = TodoTotalView(toDoControler, document.querySelector('#numberOfTasks'));
+    let todoOpenView = TodoOpenView(toDoControler, document.querySelector('#openTasks'));
+    let todoSaveView =  TodoSaveView(toDoControler, document.querySelector('#saveTasks'), document.querySelector('#resetTasks'));
+
+    document.querySelector('#plus').onclick    = _ => toDoControler.addToDo();
+    document.querySelector('#fortune').onclick    = _ => toDoControler.addFortuneTodo();
+    document.querySelector('#listTasks').onclick    = _ => toDoControler.listTasks();
+    document.querySelector('#saveTasks').onclick    = _ => toDoControler.saveTasks();
+    document.querySelector('#resetTasks').onclick    = _ => toDoControler.resetTasks();
+
+    toDoControler.addToDo();
+</script>     
+    </body>
+</html>

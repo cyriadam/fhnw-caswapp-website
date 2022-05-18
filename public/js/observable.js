@@ -1,7 +1,20 @@
 
+/**
+ * @typedef {Object} ObservableType
+ * @property { (value:*) => void} setValue
+ * @property { * } getValue
+ * @property {(subscriber:function) => void} onChange
+ */
+ /**
+ * @param  { * } value  
+ * @returns {ObservableType} 
+ */
 const Observable = (value) => {
   const listerners = [];
 
+  /**
+   * @param {*} newValue 
+   */
   const setValue = (newValue) => {
     if(value===newValue) return;
     const oldValue = value;
@@ -9,6 +22,9 @@ const Observable = (value) => {
     listerners.forEach(subscriber => subscriber(value, oldValue));
   }
 
+  /**
+   * @param {function} subscriber 
+   */
   const onChange = (subscriber) => {
     listerners.push(subscriber);
     subscriber(value, value);

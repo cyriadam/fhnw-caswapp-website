@@ -37,7 +37,7 @@ router.get("/tat", (req, res) => {
 
 router.get("/toDo", (req, res) => {
   logger.info(`access to 'toDo' page`);
-  res.render("toDo", { ...hbsProperties, title: "ToDo List" });
+  res.render("toDo-milestone3", { ...hbsProperties, title: "ToDo List" });
 });
 
 router.get("/about", (req, res) => {

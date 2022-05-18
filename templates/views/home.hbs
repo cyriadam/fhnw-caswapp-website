@@ -15,6 +15,15 @@
             <ul class="news-item">
                 <li>
                     <div class="news-header new">
+                        <p class="news-title"><strong>Refactoring</strong> of ToDo list</p>
+                        <p class="news-date">18.05.2022</p>
+                    </div>  
+                    <p class="news-content">
+                        Practice of JsDoc, MVC, Attributes, Observables and <em>Projectors</em> patterns!
+                    </p>  
+                </li>  
+                <li>
+                    <div class="news-header">
                         <p class="news-title">Release of <strong>Infected</strong></p>
                         <p class="news-date">23.04.2022</p>
                     </div>  
@@ -23,7 +32,7 @@
                     </p>  
                 </li>  
                 <li>
-                    <div class="news-header new">
+                    <div class="news-header">
                         <p class="news-title">Release of <strong>ToDo</strong> list</p>
                         <p class="news-date">09.04.2022</p>
                     </div>  
@@ -99,7 +108,7 @@
         </div>
         {{>footer}}
 <script type="module">
-    import { HomeView } from "./js/modules/home.js";
+    import { HomeView } from "./js/home.js";
     let homeView = HomeView();
     homeView.addToggle(document.querySelector('#toggleLastMonths'));
 </script> 

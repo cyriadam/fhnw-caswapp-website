@@ -1,6 +1,6 @@
 
 // --- lamba exp ---
-const id = (x) => x;
+export const id = (x) => x;
 const konst = (x) => (y) => x;
 const T = konst;
 const F = (x) => (y) => y;
