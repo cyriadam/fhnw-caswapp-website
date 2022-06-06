@@ -3,7 +3,7 @@ import { ToDoView } from "./../toDo-milestone1.js";
 
 export {tatResults}
 
-let tatResults=tat('Module TODO milestone1 / test-cases-1', (assert) => {
+let tatResults=tat('Module ToDo milestone1 / test-cases-1', (assert) => {
   const todoContainer = document.createElement("div");
   const numberOfTasksContainer = document.createElement("div");
   const openTasksContainer = document.createElement("div");

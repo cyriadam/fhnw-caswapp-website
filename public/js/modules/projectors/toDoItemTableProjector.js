@@ -2,8 +2,7 @@ import {dom} from '../util.js';
 
 export { toDoItemProjector, pageCss }
 
-let debug=true;
-let tableContainer = undefined;
+let debug=false;
 
 const toDoTextProjector = (item) => {
   let inputItem = dom(`<input id="TASK${item.id}_TXT" type="text" maxlength="100" value='${item.getText()}'>`);
@@ -30,7 +29,7 @@ const toDoDelProjector = (toDoControler, todoContainer, item) => {
   // binding GUI -> Controler
   delButtonItem.onclick=( _ => {
     toDoControler.delToDo(item.id);
-    todoContainer.removeChild(todoContainer.querySelector(`#TASK${item.id}`));
+    todoContainer.querySelector('tbody').removeChild(todoContainer.querySelector(`#TASK${item.id}`));
   });
   return delButtonItem;
 }
@@ -41,23 +40,22 @@ const toDoDelProjector = (toDoControler, todoContainer, item) => {
 const toDoItemProjector = (toDoControler, todoContainer, todoItem) => {
   if(debug) console.log('toDoItemTableProjector.renderToDoItem()');
 
-  if(!tableContainer) {
-    console.log(todoContainer);
+  let tableElement = todoContainer.querySelector('#toDo-table');
+  if(!tableElement) {
     if(debug) console.log('create the table element');
-    const tableElement = dom(`<table id='toDo-table'><tbody><tr><th>Del</th><th>Description</th><th>Done</th></tr></tbody></table>`);
+    tableElement = dom(`<table id='toDo-table'><tbody><tr><th>Del</th><th>Description</th><th>Done</th></tr></tbody></table>`);
     todoContainer.appendChild(tableElement);
-    tableContainer=tableElement.querySelector('tbody');
   }
 
   let inputItem = toDoTextProjector(todoItem);
   let checkboxItem = toDoDoneProjector(todoItem);
-  let delButtonItem = toDoDelProjector(toDoControler, tableContainer, todoItem)
+  let delButtonItem = toDoDelProjector(toDoControler, tableElement, todoItem)
   
   let tableRowElement = dom(`<tr id='TASK${todoItem.id}'><td></td><td></td><td></td></tr>`, 'tbody');
   tableRowElement.querySelector('td:nth-child(1)').appendChild(delButtonItem);
   tableRowElement.querySelector('td:nth-child(2)').appendChild(inputItem);
   tableRowElement.querySelector('td:nth-child(3)').appendChild(checkboxItem);
-  tableContainer.appendChild(tableRowElement);
+  tableElement.querySelector('tbody').appendChild(tableRowElement);
 }
 
 const pageCss = `

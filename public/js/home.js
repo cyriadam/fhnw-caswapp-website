@@ -1,4 +1,6 @@
 import { Observable } from "./modules/observable.js";
+import { io } from "./modules/client-dist/socket.io.esm.min.js";
+// import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
 export { HomeView }
 
@@ -8,6 +10,26 @@ let localStorageKey = 'toggleItems';
 const HomeControler = () => {
   const toggleList = [];
   // localStorage.removeItem(localStorageKey);
+  const socket = io();
+  const lanSpeed = Observable(-1);
+  const lanMsg = Observable();
+  let intervalId;
+ 
+  // ------------
+  // server (emit) -> client (receive) - message
+  socket.on('message', (msgData) => lanMsg.setValue(msgData));
+  socket.on('pong', (msgData) => lanSpeed.setValue(new Date().getTime()-msgData.time));
+
+  // emit with acknowledgement callback -run when the event is acknowledged by the server
+  const emitPing = (callBack) => socket.emit('ping', {time:new Date().getTime()}, callBack);
+
+  intervalId = setInterval(()=>{
+    // console.log('ping');
+    emitPing((error) => {
+        if(error) console.log(`emitPing error: ${error}`);
+    }); 
+  }, 1000);
+// ------------
 
   const createToggleItem = (id, state) => {
       const collapse = Observable(state);
@@ -31,11 +53,12 @@ const HomeControler = () => {
           return toggleItem;
       },
       persistToggleState,
-
+      onLanMsgChange: lanMsg.onChange,
+      onLanSpeedChange: lanSpeed.onChange,
   }
 }
 
-const HomeView = (todoContainer, numberOfTasks, openTasks) => {
+const HomeView = () => {
   const homeControler = HomeControler();
 
   const addToggle = (elem) => {
@@ -53,7 +76,10 @@ const HomeView = (todoContainer, numberOfTasks, openTasks) => {
     elem.onclick=(e) => toggleItem.collapse.setValue(elem.checked);
   }
 
+  homeControler.onLanMsgChange((msgData) => msgData&&console.log(`get [${msgData.text}] in ${new Date().getTime()-msgData.createdAt}ms`));
+
   return {
     addToggle,
+    addLanSpeed: (elem) => homeControler.onLanSpeedChange((lanSpeed) => { elem.innerHTML=lanSpeed }),
   } 
 }

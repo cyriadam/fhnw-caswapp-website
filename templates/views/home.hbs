@@ -15,6 +15,24 @@
             <ul class="news-item">
                 <li>
                     <div class="news-header new">
+                        <p class="news-title">Improve <strong>Home</strong></p>
+                        <p class="news-date">05.06.2022</p>
+                    </div>  
+                    <p class="news-content">
+                        Practice of <em>WebSocket</em> : <strong>network delays</strong> is <em><span id="lanSpeed">NaN</span>ms</em>
+                    </p>  
+                </li>  
+                <li>
+                    <div class="news-header new">
+                        <p class="news-title"><strong>Refactoring</strong> of Balls</p>
+                        <p class="news-date">02.06.2022</p>
+                    </div>  
+                    <p class="news-content">
+                        Practice of MVC, Observables and <em>CSS</em>
+                    </p>  
+                </li>  
+                <li>
+                    <div class="news-header">
                         <p class="news-title"><strong>Refactoring</strong> of ToDo list</p>
                         <p class="news-date">18.05.2022</p>
                     </div>  
@@ -22,6 +40,11 @@
                         Practice of JsDoc, MVC, Attributes, Observables and <em>Projectors</em> patterns!
                     </p>  
                 </li>  
+            </ul>
+            <input id ="toggleLastMonths" class="hidden" type="checkbox" checked>
+            <label for="toggleLastMonths" class="toggle"> &nbsp; Last Months news</label>
+            <div class="collapsible">
+            <ul class="news-item">
                 <li>
                     <div class="news-header">
                         <p class="news-title">Release of <strong>Infected</strong></p>
@@ -49,11 +72,6 @@
                         Include <strong>TAT</strong> of internal modules and game engine
                     </p>  
                 </li>  
-            </ul>
-            <input id ="toggleLastMonths" class="hidden" type="checkbox" checked>
-            <label for="toggleLastMonths" class="toggle"> &nbsp; Last Months news</label>
-            <div class="collapsible">
-            <ul class="news-item">
                 <li>
                     <div class="news-header">
                         <p class="news-title">Release of <strong>Excel</strong></p>
@@ -109,8 +127,10 @@
         {{>footer}}
 <script type="module">
     import { HomeView } from "./js/home.js";
+
     let homeView = HomeView();
     homeView.addToggle(document.querySelector('#toggleLastMonths'));
+    homeView.addLanSpeed(document.querySelector('#lanSpeed'))
 </script> 
     </body>
 </html>

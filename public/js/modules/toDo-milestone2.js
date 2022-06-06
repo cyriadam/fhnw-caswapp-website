@@ -1,5 +1,5 @@
 import {Observable, ObservableList} from "./observable.js";
-import {Attribute}                  from "./presentationModel_v1.js";
+import {Attribute}                  from "./presentationModel-milestone1.js";
 import {either, Right, Left}        from "./lambda.js";
 import {Scheduler}                  from "./dataflow.js";
 import {fortuneService}             from "./fortuneService.js";

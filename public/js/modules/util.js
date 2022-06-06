@@ -1,5 +1,18 @@
 // console.log('load module util.js')
 
+export const random = (max) => Math.floor(Math.random() * max);
+export const toNDecimal = (x, y) => Math.round(x * Math.pow(10, y)) / Math.pow(10, y);
+
+export const addStyle = (styleId, styleCss)=> {
+    const styleElt = document.querySelector(`style[id=${styleId}]`);
+    if(styleElt)  document.head.removeChild(styleElt);
+
+    const style = document.createElement('STYLE');
+    style.setAttribute('id', styleId);
+    style.innerHTML=styleCss;
+    document.head.appendChild(style);
+};  
+
 export const romanize = num => {
     const lookup = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
     let roman = '';

@@ -5,7 +5,7 @@
     <link rel="icon" href="/img/favicon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/todo.css" />
-    <title>ToDo List v3</title>
+    <title>ToDo List v4</title>
     </head>
     <body>
         <div class="main-content">
@@ -14,6 +14,8 @@
                 <button id="plus" class="btn" autofocus> + </button>
                 <button id="fortune" class="btn"> fortune! </button>
                 <button id="listTasks" class="btn"> List Tasks </button>
+                <input id="switchStyle" class="hidden" type="checkbox">
+                <label for="switchStyle" class="switch"></label>
                 <div class="table" id="todoContainer">
                 </div>
                 <br/>                
@@ -25,8 +27,8 @@
         </div>
         {{>footer}}
 <script type="module">
-    import { ToDoControler, TodoItemsView, TodoTotalView, TodoOpenView, TodoSaveView, init } from "./js/modules/toDo-milestone3.js";
-    import { tatResults } from "./js/modules/tests/toDo-milestone3Test.js";
+    import { ToDoControler, TodoItemsView, TodoTotalView, TodoOpenView, TodoSaveView, init } from "./js/modules/toDo-milestone4.js";
+    import { tatResults } from "./js/modules/tests/toDo-milestone4Test.js";
     init(tatResults);
 
     let toDoControler = ToDoControler();
@@ -40,6 +42,7 @@
     document.querySelector('#listTasks').onclick    = _ => toDoControler.listTasks();
     document.querySelector('#saveTasks').onclick    = _ => toDoControler.saveTasks();
     document.querySelector('#resetTasks').onclick    = _ => toDoControler.resetTasks();
+    document.querySelector('#switchStyle').onclick    = _ => toDoControler.switchStyle();
 
     toDoControler.addToDo();
 </script>     

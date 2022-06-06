@@ -23,6 +23,7 @@ export const Observable = (value) => {
     // console.log(`Observable2 ==> add a new subscriber in listerners (count=${listerners.length})`)
     listerners.push(subscriber);
     subscriber(value, value, () => listenersRemove(subscriber));
+    return () => listenersRemove(subscriber)
   }
 
   return {

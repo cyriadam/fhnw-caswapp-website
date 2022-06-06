@@ -27,9 +27,10 @@ yargs
 const argv = yargs.argv;
 
 const app = require("./app");
+const server = require("./io")(app);
 
 // === starting the server ===
-app.listen(process.env.PORT || argv.port, () => {
+server.listen(process.env.PORT || argv.port, () => {
   console.log(
     `${chalk.bold.inverse.green(
       " Success "

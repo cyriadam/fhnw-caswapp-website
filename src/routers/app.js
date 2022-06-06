@@ -17,7 +17,7 @@ router.get("/snake", (req, res) => {
 
 router.get("/ball", (req, res) => {
   logger.info(`access to 'ball' page`);
-  res.render("ball", { ...hbsProperties, title: "Balls" });
+  res.render("ball-milestone2", { ...hbsProperties, title: "Balls" });
 });
 
 router.get("/plotter", (req, res) => {
@@ -37,7 +37,7 @@ router.get("/tat", (req, res) => {
 
 router.get("/toDo", (req, res) => {
   logger.info(`access to 'toDo' page`);
-  res.render("toDo-milestone3", { ...hbsProperties, title: "ToDo List" });
+  res.render("toDo-milestone4", { ...hbsProperties, title: "ToDo List" });
 });
 
 router.get("/about", (req, res) => {
