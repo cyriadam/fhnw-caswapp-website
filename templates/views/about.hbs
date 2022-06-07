@@ -7,8 +7,35 @@
         <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&family=Kalam:wght@300&display=swap" rel="stylesheet">
         <link rel='icon' href='/img/favicon.png'>
         <link rel='stylesheet' href='/css/styles.css'>
+        <!-- keys : mix-blend-mode: multiply; and background-color: white; --> 
+        <style>
+            #glassboard.glassboardOn {
+                background-color: rgba(86, 86, 86, 0.252);
+            }
+             #spotlight.glassboardOn {
+                box-shadow: rgba(149, 157, 165, 0.9) 0px 8px 24px;
+             }
+            #glassboard {
+                position: fixed;
+                inset: 0;
+                background-color: transparent;
+                pointer-events: none;
+                mix-blend-mode: multiply;
+                background-color: transparent;
+                transition: 0.7s background-color;
+            }
+            #spotlight {
+                position: fixed;
+                width: 20vh;
+                height: 20vh;
+                border-radius: 50%;
+                background-color: white; 
+                transition: 0.7s box-shadow;
+            }
+        </style>
     </head>
     <body>
+        <div id="glassboard"><div id="spotlight"></div></div>
         <div class="main-content">
             {{>header}}
             <article class="about-content">
@@ -26,5 +53,16 @@
             </article>        
         </div>
         {{>footer}}
+<script>
+window.addEventListener("keydown", (event) => { if(event.key=='Alt')  {
+    document.querySelector('#glassboard').classList.add("glassboardOn");
+    document.querySelector('#spotlight').classList.add("glassboardOn");
+}}, true);     
+window.addEventListener("keyup", (_) => { 
+    document.querySelector('#glassboard').classList.remove("glassboardOn");
+    document.querySelector('#spotlight').classList.remove("glassboardOn");
+}, true); 
+window.addEventListener("mousemove", ({pageX:x, pageY:y}) => { document.querySelector('#spotlight').style.transform = `translate(calc(-50% + ${x}px),calc(-50% + ${y}px))`;  });
+</script>
     </body>
 </html>
