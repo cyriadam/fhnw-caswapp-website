@@ -45,8 +45,8 @@ router.get("/about", (req, res) => {
   res.render("about", { ...hbsProperties, title: "About Me" });
 });
 
-router.get("/test", (req, res) => {
-  res.render("test", { ...hbsProperties, title: "Test" });
+router.get("/poc", (req, res) => {
+  res.render("poc", { ...hbsProperties, title: "Test" });
 });
 
 router.get("/infected", (req, res) => {

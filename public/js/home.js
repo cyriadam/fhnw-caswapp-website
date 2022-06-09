@@ -23,12 +23,13 @@ const HomeControler = () => {
   // emit with acknowledgement callback -run when the event is acknowledged by the server
   const emitPing = (callBack) => socket.emit('ping', {time:new Date().getTime()}, callBack);
 
+  emitPing();
   intervalId = setInterval(()=>{
     // console.log('ping');
     emitPing((error) => {
         if(error) console.log(`emitPing error: ${error}`);
     }); 
-  }, 1000);
+  }, 3000);
 // ------------
 
   const createToggleItem = (id, state) => {
