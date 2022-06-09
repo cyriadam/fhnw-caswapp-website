@@ -1,5 +1,6 @@
 import {sayHi} from './say.js';
 import { io } from "./client-dist/socket.io.esm.min.js";
+import {random} from "./util.js";
 
 let debug = false;
 let players = [];    // [{"playerName":"John Do","coord":{"x":0,"y":18}}]
@@ -86,6 +87,7 @@ const init = (placeHolder) => {
   const rootElt = document.querySelector(placeHolder);
   const canvas = document.querySelector('.game-canvas');
   rootElt.querySelector('#hi').innerHTML = sayHi('John');
+  rootElt.querySelector('#playername').value=`John${random(100)} Do`;
   
   let game;
   const socket = io();
