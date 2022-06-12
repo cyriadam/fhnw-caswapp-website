@@ -2,6 +2,11 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const {Observable} = require("./utils/observable");
 
+function * sequence() {
+    let i=0;
+    while(true) yield ++i; 
+}
+
 const Game = (intervalBomb=5, nbBombs=10) => {
     return {
       getIntervalBomb : () => intervalBomb*1000,
@@ -16,12 +21,29 @@ const random = (max) => Math.floor(Math.random() * max);
 const GameControler = () => {
     let intervalBombId;
     let intervalGameId;
+    const playerIdSequence = sequence();
   
     const game = Game(2, 3);
     const gameStarted=Observable(false);
     const time=Observable(0);
     let nbBombs;
     let players = [];
+
+    const d_up = 1;
+    const d_right = 2;
+    const d_down = 3;
+    const d_left = 4;
+    const s_alive = 1;
+    const s_dead = 2;
+    let directionsClockwise = [d_up, d_right, d_down, d_left, d_up];
+    let directionsAntiClockwise = [d_up, d_left, d_down, d_right, d_up];
+
+    const turnClockwise = (direction, clockwise) => {
+        return clockwise?(directionsClockwise[directionsClockwise.findIndex((elt) => elt == direction) + 1])
+        :(directionsAntiClockwise[directionsAntiClockwise.findIndex((elt) => elt == direction) + 1]);
+    };
+
+
   
     const dropBomb = () => {
         // ((nbBombs--)>0)?(_=> {
@@ -58,7 +80,7 @@ const GameControler = () => {
             intervalGameId = setTimeout(() => gameStarted.setValue(false), game.getIntervalGame());
             players.forEach(p=>{
                 console.log(`send gameStarted to player ${p.playerName}`);
-                p.socket.emit('gameStarted', players.map(({playerName, coord, direction}) => ({playerName, coord, direction})));
+                p.socket.emit('gameStarted', players.map(({playerId, coord, direction, state}) => ({playerId, coord, direction, state})));
             });
         }
         else {
@@ -77,12 +99,14 @@ const GameControler = () => {
         endGame : () => gameStarted.setValue(false),
         isGameStarted : gameStarted.getValue,
         addPlayer: (player) => { 
-            players.push({...player, coord: {x:random(20), y:random(20)}, direction:1+random(4)});
-            player.socket.emit('waitingForPlayers');
-            player.socket.on('playerTurn', ({playerName, direction}, callback) => { 
+            const playerData = {...player, playerId:playerIdSequence.next().value, coord: {x:random(20), y:random(20)}, direction:1+random(4), state:s_alive}
+            players.push(playerData);
+            player.socket.emit('waitingForPlayers', {playerId:playerData.playerId});
+            player.socket.on('playerTurn', ({clockwise}, callback) => { 
+                playerData.direction=turnClockwise(playerData.direction, clockwise);
                 players.forEach(p=>{
-                    console.log(`send playerTurn(playerName=[${playerName}], direction=[${direction}]) to player ${p.playerName}`);
-                    p.socket.emit('playerTurn', {playerName, direction});
+                    console.log(`send playerTurn(playerId=[${playerData.playerId}], direction=[${playerData.direction}]) to player ${p.playerId}`);
+                    p.socket.emit('playerTurn', {playerId:playerData.playerId, direction: playerData.direction});
                 });
                 if(callback) callback();    
             });

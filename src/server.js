@@ -27,7 +27,7 @@ yargs
 const argv = yargs.argv;
 
 const app = require("./app");
-const server = require("./io")(app);
+const server = require("./io-milestone2")(app);
 
 // === starting the server ===
 server.listen(process.env.PORT || argv.port, () => {
