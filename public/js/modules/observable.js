@@ -88,7 +88,9 @@ export const ObservableList = (list) => {
     },
     add,
     del,
+    clear: () => list.length=0,
     count: () => list.length,
     countIf: (pre) => list.reduce((sum, item) => (pre(item)?sum+1:sum), 0),
+    find: (pre) => list.find(pre),
   }
 }
