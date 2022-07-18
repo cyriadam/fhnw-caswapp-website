@@ -7,7 +7,7 @@ const { random } = require("../utils/general");
 
 const log4js = require("../services/log4j");
 const logger = log4js.getLogger("dataPool".toFixed(10));
-// logger.level = "debug";
+logger.level = "debug";
 
 const DataPoolController = () => {
 
@@ -24,6 +24,7 @@ const DataPoolController = () => {
         try {
             // const data = await fs.readFile(path.join(__basedir, filePersistenceFolder, dataPoolFileName), "utf-8");
             const data = await fs.readFile(path.join(__dirname, `/../../${filePersistenceFolder}`, dataPoolFileName), "utf-8");
+            logger.debug(`read file ${path.join(__dirname, `/../../${filePersistenceFolder}`, dataPoolFileName)} : [${JSON.stringify(data)}]`)
             dataPoolValues = { ...dataPoolValues, ...JSON.parse(data) };
         } catch (err) {
             logger.error(`Error while readding the ${dataPoolFileName} file : ${err}`);
