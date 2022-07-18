@@ -13,7 +13,7 @@ const DataPoolController = () => {
 
     // const dataPool = ObservableObjectProperties({nbPlayerBullets:3, nbBombs:10, gameDuration:30, gameTimeOut:30, welcomeText:'Welcome!'});
     const dataSet = ObservableObjectProperties({});
-    const dataSetDefaultValues = {nbPlayerBullets:3, nbBombs:10, gameDuration:30, gameTimeOut:30, welcomeText:'Welcome!'};
+    const dataSetDefaultValues = {nbPlayerBullets:3, nbBombs:10, gameDuration:30, gameTimeOut:60, welcomeText:'Welcome!'};
     const dataSetDefaultKeys = Object.keys(dataSetDefaultValues);
     const dataSetTmp = ObservableObjectProperties({});
 

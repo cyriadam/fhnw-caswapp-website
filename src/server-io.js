@@ -21,7 +21,7 @@ const createServer = (httpServer) => {
     });
 
     io.engine.on('connection_error', (err) => {
-        console.log(`WebSocket connection error`, err);
+        logger.error(`WebSocket connection error`, err);
     });
 }
 

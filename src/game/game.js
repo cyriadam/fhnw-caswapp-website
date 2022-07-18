@@ -94,7 +94,7 @@ const Player = (socket, playerId, playerName, coord, direction = (1 + random(4))
 };
 
 const Game = (nbPlayerBullets=3, nbBombs=10, gameDuration=30, gameTimeOut=30) => {
-    console.log(`[IICI] initialise the Game with : nbPlayerBullets=${nbPlayerBullets}, nbBombs=${nbBombs}, gameDuration=${gameDuration}, gameTimeOut=${gameTimeOut} `)
+    logger.debug(`initialise the Game with : nbPlayerBullets=${nbPlayerBullets}, nbBombs=${nbBombs}, gameDuration=${gameDuration}, gameTimeOut=${gameTimeOut} `)
     let intervalBomb = 5;
     let intervalRefillBullets = 10;
     let intervalNextBoard = 500;

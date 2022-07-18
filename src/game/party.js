@@ -106,7 +106,7 @@ const PartyControler = (hallOfFame, dataPoolInstance) => {
         });
         parties.push(party);
         rmPartyInfoSubscription=party.info.onChange(data=>{
-            console.log(`party updated : ${JSON.stringify(data)} data.players=${JSON.stringify(data.players)}`);
+            logger.debug(`party updated : ${JSON.stringify(data)} data.players=${JSON.stringify(data.players)}`);
             partiesInfo.setValue([data, ...partiesInfo.getValue().filter(a=>a.id!=partyId)].sort((a, b) => a.createdAt > b.createdAt ? -1 : 1));
         });
 
