@@ -22,6 +22,7 @@ const DataPoolController = () => {
 
         let dataPoolValues = dataSetDefaultValues;
         try {
+            // rem : use __dirname instead of __basedir due to heroku settings
             // const data = await fs.readFile(path.join(__basedir, filePersistenceFolder, dataPoolFileName), "utf-8");
             const data = await fs.readFile(path.join(__dirname, `/../../${filePersistenceFolder}`, dataPoolFileName), "utf-8");
             logger.debug(`read file ${path.join(__dirname, `/../../${filePersistenceFolder}`, dataPoolFileName)} : [${JSON.stringify(data)}]`)

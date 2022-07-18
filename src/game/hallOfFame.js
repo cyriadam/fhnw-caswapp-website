@@ -27,6 +27,7 @@ const HallOfFameControler = () => {
 
         let scores = [];
         try {
+            // rem : use __dirname instead of __basedir due to heroku settings
             // const data = await fs.readFile(path.join(__basedir, filePersistenceFolder, hallOfFameFileName), "utf-8");
             const data = await fs.readFile(path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName), "utf-8");
             logger.debug(`read file ${path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName)} : [${JSON.stringify(data)}]`)
@@ -48,13 +49,6 @@ const HallOfFameControler = () => {
         try {
             // await fs.writeFile(path.join(__basedir, filePersistenceFolder, hallOfFameFileName), JSON.stringify(scores));
             await fs.writeFile(path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName), JSON.stringify(scores));
-
-            logger.debug(`write file ${path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName)} succeed`);
-            const data = await fs.readFile(path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName), "utf-8");
-            logger.debug(`read file ${path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName)} : [${JSON.stringify(data)}]`);
-            
-            scores = JSON.parse(data).filter(obj => Object.keys({ playerId: -1, playerName: '', score: 0, comment: '', createdAt:-1 }).every(key => obj.hasOwnProperty(key) && obj[key] != undefined)).map(({ playerId, playerName, score, comment, createdAt}) => ({ playerId, playerName, score, comment, createdAt }));
-
         } catch (err) {
             logger.error(`Error while writting the ${hallOfFameFileName} file : ${err}`);
         }
