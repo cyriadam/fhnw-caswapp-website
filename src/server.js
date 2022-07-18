@@ -1,8 +1,9 @@
 const chalk = require("chalk");
 const pathParse = require("path-parse");
 const yargs = require("yargs")(process.argv.slice(2));
-
+const { createServer } = require("http");
 const { appProperties } = require("./config/app.config");
+const { createServer:createIOServer } = require("./server-io");
 
 // === yargs settings ===
 yargs
@@ -26,15 +27,16 @@ yargs
   );
 const argv = yargs.argv;
 
-const app = require("./app");
-const server = require("./io-milestone2")(app);
+const serverExpress = require("./server-express");
+const httpServer = createServer(serverExpress);
+createIOServer(httpServer);
 
 // === starting the server ===
-server.listen(process.env.PORT || argv.port, () => {
+httpServer.listen(process.env.PORT||argv.port, () => {
   console.log(
     `${chalk.bold.inverse.green(
       " Success "
-    )} : Server is up at http://localhost:${process.env.PORT || argv.port}`
+    )} : Server is up at http://localhost:${process.env.PORT||argv.port}`
   );
   console.log(`> See more options : ${pathParse(argv["$0"]).base} --help`);
 });

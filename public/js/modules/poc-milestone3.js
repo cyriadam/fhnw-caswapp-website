@@ -3,7 +3,7 @@ import {io} from "./client-dist/socket.io.esm.min.js";
 import {random} from "./util.js";
 import {Observable, ObservableList} from "./observable.js";
 
-let debug = false;
+let debug = true;
 
 const User = () => { 
   let playerId;
@@ -43,8 +43,21 @@ const Game = () => {
   }
 };
 
-const GameControler = () => {
-  const socket = io();
+
+const HallOfFameControler = (socket) => {
+  const hallOfFame=Observable([]);
+
+  socket.on('hallOfFame', (data) => {
+    if(debug) console.log(`get('hallOfFame')=${JSON.stringify(data)}`);
+      hallOfFame.setValue(data);
+  });
+
+  return {
+    hallOfFame,
+  }
+}
+
+const GameControler = (socket) => {
   let user = User();
   let game = Game();
   let players = ObservableList([]);   
@@ -90,8 +103,8 @@ const GameControler = () => {
     gameStarted.setValue(true);
     gameState.setValue('run');
   }); 
-  socket.on('gameOver', () => {
-    if(debug) console.log(`get('gameOver')`);
+  socket.on('gameOver', (data) => {
+    if(debug) console.log(`get('gameOver')=${JSON.stringify(data)}`);
     message.setValue(`Game Over`);
     gameStarted.setValue(false);
     gameState.setValue('end');
@@ -126,7 +139,28 @@ const GameControler = () => {
   }  
 }
 
-const GameView = (gameController, rootElt, canvas) => {
+const HallOfFameView = (hallOfFameControler, rootElt) => {
+  let hallOfFameContainer=rootElt.querySelector('#hallOfFame');
+
+  const render = (scores) => {
+    hallOfFameContainer.innerHTML = '';
+    scores.forEach(item=> {
+      const playerNameElt = document.createElement('span');
+      playerNameElt.textContent = item.playerName;
+      const playerScoreElt = document.createElement('span');
+      playerScoreElt.textContent = item.score;
+      const playerCommentElt = document.createElement('span');
+      playerCommentElt.textContent = item.comment;
+      hallOfFameContainer.appendChild(playerNameElt);
+      hallOfFameContainer.appendChild(playerScoreElt);
+      hallOfFameContainer.appendChild(playerCommentElt);
+    });
+  }
+
+  hallOfFameControler.hallOfFame.onChange(render);
+}
+
+const GameView = (gameController, hallOfFameControler, rootElt, canvas) => {
   let greatingElt=rootElt.querySelector('#hi');
   let messageElt=rootElt.querySelector('#message');
   let userNameElt=rootElt.querySelector('#username');
@@ -137,6 +171,8 @@ const GameView = (gameController, rootElt, canvas) => {
   let soundGameOn=document.getElementById("soundGameOn");
   let soundGameEnd=document.getElementById("soundGameEnd");
   let soundBlip=document.getElementById("soundBlip");
+  let highScoreElt=rootElt.querySelector('#highScore');
+  const scheduler = Scheduler();
 
   const renderGame = ((canvas, players, bombs, game) => () => {
     const d_up = 1;
@@ -213,16 +249,22 @@ const GameView = (gameController, rootElt, canvas) => {
   });
   gameController.onAddPlayers(player=> player.state.onChange(state => (state==2)&&soundBlip.play()));
 
+  hallOfFameControler.hallOfFame.onChange(scores=> highScoreElt.innerHTML=scores.reduce((acc, curr) => curr.score>acc?curr.score:acc, 0));
+
   gameController.onTimeChange(_=> renderGame());
 }
 
 
 const init = (placeHolder) => {
+  const socket = io();
   const rootElt = document.querySelector(placeHolder);
   const canvas = rootElt.querySelector('.game-canvas');
   
-  let gameControler = GameControler();
-  let gameView = GameView(gameControler, rootElt, canvas);
+  let gameControler = GameControler(socket);
+  let hallOfFameControler = HallOfFameControler(socket);
+  let gameView = GameView(gameControler, hallOfFameControler, rootElt, canvas);
+  let hallOfFameView = HallOfFameView(hallOfFameControler, rootElt);
+
   gameControler.setUserName(`John${random(100)} Do`);
 }
 

@@ -1,8 +1,8 @@
 const express = require("express");
-const router = new express.Router();
+const router = express.Router();
 const { hbsProperties } = require("../config/app.config");
-const log4js = require("../services/log4j");
-let logger = log4js.getLogger("cas-wapp");
+const log4js = require("./../services/log4j");
+let logger = log4js.getLogger("cas-wapp".toFixed(10));
 
 // --- Chat pages ---
 router.get("", (req, res) => {
@@ -45,8 +45,8 @@ router.get("/about", (req, res) => {
   res.render("about", { ...hbsProperties, title: "About Me" });
 });
 
-router.get("/poc", (req, res) => {
-  res.render("poc", { ...hbsProperties, title: "Test" });
+router.get("/cellife", (req, res) => {
+  res.render("cellife", { ...hbsProperties, title: "Cellife" });
 });
 
 router.get("/infected", (req, res) => {

@@ -17,11 +17,12 @@ const HomeControler = () => {
  
   // ------------
   // server (emit) -> client (receive) - message
+  socket.on('connect_error', (err) => console.log('Error connecting to server...'));
   socket.on('message', (msgData) => lanMsg.setValue(msgData));
   socket.on('pong', (msgData) => lanSpeed.setValue(new Date().getTime()-msgData.time));
 
   // emit with acknowledgement callback -run when the event is acknowledged by the server
-  const emitPing = (callBack) => socket.emit('ping', {time:new Date().getTime()}, callBack);
+  const emitPing = (callBack) => {if (socket.connected) socket.emit('ping', {time:new Date().getTime()}, callBack)};
 
   emitPing();
   intervalId = setInterval(()=>{
@@ -30,7 +31,7 @@ const HomeControler = () => {
         if(error) console.log(`emitPing error: ${error}`);
     }); 
   }, 3000);
-// ------------
+  // ------------
 
   const createToggleItem = (id, state) => {
       const collapse = Observable(state);
@@ -77,7 +78,7 @@ const HomeView = () => {
     elem.onclick=(e) => toggleItem.collapse.setValue(elem.checked);
   }
 
-  homeControler.onLanMsgChange((msgData) => msgData&&console.log(`get [${msgData.text}] in ${new Date().getTime()-msgData.createdAt}ms`));
+  homeControler.onLanMsgChange((msgData) => msgData&&console.log(`get [${msgData.message}] in ${new Date().getTime()-msgData.createdAt}ms`));
 
   return {
     addToggle,

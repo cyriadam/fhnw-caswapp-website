@@ -5,11 +5,20 @@ require('dotenv').config({ path: path.join(__dirname, '/../../config/process.env
 const appProperties = {
     portDefault : 3000,
     maintenanceMode : false,
+    filePersistenceFolder: 'data',
 }
 
 const hbsProperties = { 
     author: 'Cyril Adam', 
-    version: '1.0.0' 
+    version: '1.0.0',
 }
 
-module.exports = { appProperties, hbsProperties }
+const gameProperties = { 
+    hallOfFameFileName:'hallOfFame.json',
+    hallOfFameNbRecords: 10,                           // keep top N scores
+    hallOfFameExpiredDelay: 30,                        // score expired for hallOfFame after N day(s), set to -1 to diseable
+    dataPoolFileName:'dataPool.json',
+    dataPoolPersistTimeOut: 10,                       // if the dataPool is updated, the data are persisted only after this delay (en sec) 
+}
+
+module.exports = { appProperties, hbsProperties, gameProperties }

@@ -7,10 +7,6 @@ const appRouter = require("./routers/app");
 // -- definition of global settings --
 global.__basedir = path.join(__dirname, "..");
 
-console.log(__dirname);
-console.log(__basedir);
-console.log(__filename);
-
 const maintenanceMiddleware = require("./middlewares/maintenance");
 const logMiddleware = require("./middlewares/log");
 

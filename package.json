@@ -1,6 +1,9 @@
 {
   "name": "chat-app",
   "version": "1.0.0",
+  "engines": {
+    "node": "17.3.0"
+  },
   "description": "npm init -y",
   "main": "index.js",
   "scripts": {
@@ -9,6 +12,9 @@
     "prod": "env-cmd -f ./config/prod.env nodemon src/server.js",
     "start_nodemon": "nodemon src/server.js",
     "start": "node src/server.js"
+  },
+  "nodemonConfig": {
+    "ignore": ["/data/*"]
   },
   "keywords": [],
   "author": "",

@@ -57,11 +57,11 @@ const ObservableList = (list) => {
     getList: () => list,
     onAdd: subscriber => {
       onAddListeners.push(subscriber)
-      console.log(`==> add a new subscriber in onAddListeners (count=${onAddListeners.length})`)
+      // console.log(`==> add a new subscriber in onAddListeners (count=${onAddListeners.length})`)
     },
     onDel: subscriber =>  {
       onDelListeners.push(subscriber)
-      console.log(`==> add a new subscriber in onDelListeners (count=${onDelListeners.length})`)
+      // console.log(`==> add a new subscriber in onDelListeners (count=${onDelListeners.length})`)
     },
     add,
     del,

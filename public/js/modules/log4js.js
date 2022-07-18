@@ -14,5 +14,5 @@ export const error = (...args) => { if (logLevel >= LEVEL_ERROR) Array.from(args
 export const warn  = (...args) => { if (logLevel >= LEVEL_WARN)  Array.from(args, (arg) => console.warn (arg)); }
 export const info  = (...args) => { if (logLevel >= LEVEL_INFO)  Array.from(args, (arg) => console.info (arg)); }
 export const log   = (...args) => { if (logLevel >= LEVEL_LOG)   Array.from(args, (arg) => console.log  (arg)); }
-export const debug = (...args) => { if (logLevel >= LEVEL_DEBUG) Array.from(args, (arg) => console.log(arg)); }
+export const debug = (...args) => { if (logLevel >= LEVEL_DEBUG) Array.from(args, (arg) => console.log  (arg)); }
 

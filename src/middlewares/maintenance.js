@@ -1,5 +1,5 @@
 const log4js = require("./../services/log4j");
-let logger = log4js.getLogger("server  ");
+let logger = log4js.getLogger("server".toFixed(10));
 
 const {
   appProperties: { maintenanceMode },

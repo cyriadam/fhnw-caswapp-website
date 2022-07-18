@@ -2,7 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const { hbsProperties } = require("./../config/app.config");
 const log4js = require("./../services/log4j");
-let logger = log4js.getLogger("404     ");
+let logger = log4js.getLogger("404".toFixed(10));
 
 // --- 404 pages ---
 router.get("/help/*", (req, res) => {
