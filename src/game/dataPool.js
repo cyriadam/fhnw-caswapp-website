@@ -22,7 +22,8 @@ const DataPoolController = () => {
 
         let dataPoolValues = dataSetDefaultValues;
         try {
-            const data = await fs.readFile(path.join(__basedir, filePersistenceFolder, dataPoolFileName), "utf-8");
+            // const data = await fs.readFile(path.join(__basedir, filePersistenceFolder, dataPoolFileName), "utf-8");
+            const data = await fs.readFile(path.join(__dirname, `/../../${filePersistenceFolder}`, dataPoolFileName), "utf-8");
             dataPoolValues = { ...dataPoolValues, ...JSON.parse(data) };
         } catch (err) {
             logger.error(`Error while readding the ${dataPoolFileName} file : ${err}`);
@@ -40,7 +41,8 @@ const DataPoolController = () => {
         logger.info(`persist DataPool : ${JSON.stringify(data)}`);
 
         try {
-            await fs.writeFile(path.join(__basedir, filePersistenceFolder, dataPoolFileName), JSON.stringify(data));
+            // await fs.writeFile(path.join(__basedir, filePersistenceFolder, dataPoolFileName), JSON.stringify(data));
+            await fs.writeFile(path.join(__dirname, `/../../${filePersistenceFolder}`, dataPoolFileName), JSON.stringify(data));
         } catch (err) {
             logger.error(`Error while writting the ${dataPoolFileName} file : ${err}`);
         }

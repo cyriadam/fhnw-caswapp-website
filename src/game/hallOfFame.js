@@ -27,7 +27,8 @@ const HallOfFameControler = () => {
 
         let scores = [];
         try {
-            const data = await fs.readFile(path.join(__basedir, filePersistenceFolder, hallOfFameFileName), "utf-8");
+            // const data = await fs.readFile(path.join(__basedir, filePersistenceFolder, hallOfFameFileName), "utf-8");
+            const data = await fs.readFile(path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName), "utf-8");
             scores = JSON.parse(data).filter(obj => Object.keys({ playerId: -1, playerName: '', score: 0, comment: '', createdAt:-1 }).every(key => obj.hasOwnProperty(key) && obj[key] != undefined)).map(({ playerId, playerName, score, comment, createdAt}) => ({ playerId, playerName, score, comment, createdAt }));
         } catch (err) {
             logger.error(`Error while readding the ${hallOfFameFileName} file : ${err}`);
@@ -44,7 +45,8 @@ const HallOfFameControler = () => {
         logger.info(`persist HallOfFame : ${JSON.stringify(scores)}`);
 
         try {
-            await fs.writeFile(path.join(__basedir, filePersistenceFolder, hallOfFameFileName), JSON.stringify(scores));
+            // await fs.writeFile(path.join(__basedir, filePersistenceFolder, hallOfFameFileName), JSON.stringify(scores));
+            await fs.writeFile(path.join(__dirname, `/../../${filePersistenceFolder}`, hallOfFameFileName), JSON.stringify(scores));
         } catch (err) {
             logger.error(`Error while writting the ${hallOfFameFileName} file : ${err}`);
         }
