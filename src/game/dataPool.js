@@ -7,7 +7,7 @@ const { random } = require("../utils/general");
 
 const log4js = require("../services/log4j");
 const logger = log4js.getLogger("dataPool".toFixed(10));
-logger.level = "debug";
+logger.level = "error";
 
 const DataPoolController = () => {
 

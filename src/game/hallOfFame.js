@@ -7,7 +7,7 @@ const { Observable } = require("../utils/observable");
 const log4js = require("../services/log4j");
 const logger = log4js.getLogger("hallOfFame".toFixed(10));
 const OneDay = 24*60*60*1000;
-logger.level = "debug";
+logger.level = "error";
 
 
 const HallOfFameControler = () => {
