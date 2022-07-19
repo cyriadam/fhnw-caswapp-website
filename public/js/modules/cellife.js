@@ -1,6 +1,6 @@
 import {sayHi} from './say.js';
 import {io} from "./client-dist/socket.io.esm.min.js";
-import {random, dom, makeObj } from "./util.js";
+import {random, dom, makeObj, cleanHtml } from "./util.js";
 import {Observable, ObservableList, ObservableObject} from "./observable.js";
 
 let debug = true;
@@ -263,6 +263,7 @@ const GameController = (socket) => {
     setMessage : message.setValue,
     onMessageChange: message.onChange, 
     setUserName: user.setName,
+    getUserName: user.getName,
     onUserNameChange: user.onNameChange,
     onUserScoreChange: user.score.onChange,
     onUserNbBulletsChange: user.nbBullets.onChange,
@@ -379,6 +380,15 @@ const GameView = (gameController, hallOfFameController, dataPoolController, root
   let gameDurationElt=rootElt.querySelector('#gameDuration');
   let gameTimeOutElt=rootElt.querySelector('#gameTimeOut');
   let welcomeTxtElt=rootElt.querySelector('#welcomeTxt');
+  // --
+  let cellImgElt=document.querySelector('#cellImg');
+  let cellDeadImgElt=document.querySelector('#cellDeadImg');
+  let virusImgElt=document.querySelector('#virusImg');
+  let virusDeadImgElt=document.querySelector('#virusDeadImg');
+  let bombImgElt=document.querySelector('#bombImg');
+  // -- ChatRoom
+  let chatMsgElt=rootElt.querySelector('#chatMsg');
+  let chatRoomElt=rootElt.querySelector('#chatRoom');
 
   const renderGame = ((canvas, players, bombs, game) => () => {
     const d_up = 1;
@@ -394,31 +404,35 @@ const GameView = (gameController, hallOfFameController, dataPoolController, root
     context.clearRect(0, 0, canvas.width, canvas.height);
     let cellWidth = canvas.width/game.boundaries().x;
     let cellHeight = canvas.height/game.boundaries().y;  
+    // == skin minimaliste ==
     // -- render the players
-    players.forEach(player=>{
-      if(player.state.getValue()==s_alive) {
-        context.fillStyle = (player.playerId==game.playerId())?"green":"cyan";
-        context.fillRect(1 + player.coord().x * cellWidth, 1 + player.coord().y * cellHeight, cellWidth - 2, cellHeight- 2);
-      }
-      else {
-        context.strokeStyle = (player.playerId==game.playerId())?"green":"cyan";
-        context.strokeRect(1 + player.coord().x * cellWidth, 1 + player.coord().y * cellHeight, cellWidth - 2, cellHeight - 2);
-        context.stroke();
-      }
-    });
-  
+    // players.forEach(player=>{
+    //     if(player.state.getValue()==s_alive) {
+    //       context.fillStyle = (player.playerId==game.playerId())?"green":"cyan";
+    //       context.fillRect(1 + player.coord().x * cellWidth, 1 + player.coord().y * cellHeight, cellWidth - 2, cellHeight- 2);
+    //     }
+    //     else {
+    //       context.strokeStyle = (player.playerId==game.playerId())?"green":"cyan";
+    //       context.strokeRect(1 + player.coord().x * cellWidth, 1 + player.coord().y * cellHeight, cellWidth - 2, cellHeight - 2);
+    //       context.stroke();
+    //     }
+    // });
     // -- render the bombs
-    bombs.forEach(bomb => {
-      context.lineWidth = 2;
-      context.lineCap = "round";
-      context.strokeStyle = "red";
-      context.beginPath();
-      context.moveTo(1 + bomb.x * cellWidth, 1 + bomb.y * cellHeight);
-      context.lineTo((bomb.x + 1) * cellWidth - 1, (bomb.y + 1) * cellHeight - 1);
-      context.moveTo(1 + bomb.x * cellWidth, (bomb.y + 1) * cellHeight - 1);
-      context.lineTo((bomb.x + 1) * cellWidth - 1, 1 + bomb.y * cellHeight);
-      context.stroke();
-    });
+    // bombs.forEach(bomb => {
+    //     context.lineWidth = 2;
+    //     context.lineCap = "round";
+    //     context.strokeStyle = "red";
+    //     context.beginPath();
+    //     context.moveTo(1 + bomb.x * cellWidth, 1 + bomb.y * cellHeight);
+    //     context.lineTo((bomb.x + 1) * cellWidth - 1, (bomb.y + 1) * cellHeight - 1);
+    //     context.moveTo(1 + bomb.x * cellWidth, (bomb.y + 1) * cellHeight - 1);
+    //     context.lineTo((bomb.x + 1) * cellWidth - 1, 1 + bomb.y * cellHeight);
+    //     context.stroke();
+    //   });
+    // -- skin cells --
+    bombs.filter(bomb=>players.find(player=>player.coord().x==bomb.x&&player.coord().y==bomb.y)==undefined).forEach(bomb=>context.drawImage(bombImgElt, bomb.x*cellWidth -4, bomb.y*cellHeight -4, cellWidth +8, cellHeight +8));
+    players.filter(player=>player.playerId==game.playerId()).forEach(player=>context.drawImage(player.state.getValue()==s_alive?cellImgElt:cellDeadImgElt, player.coord().x*cellWidth -4 , player.coord().y*cellHeight -4, cellWidth+8, cellHeight+8));
+    players.filter(player=>player.playerId!=game.playerId()).forEach(player=>context.drawImage(player.state.getValue()==s_alive?virusImgElt:virusDeadImgElt, player.coord().x*cellWidth -6 , player.coord().y*cellHeight -6, cellWidth+12, cellHeight+12));
 
   })(canvas, gameController.getPlayers(), gameController.getBombs(), gameController.getGameSettings());
 
@@ -486,6 +500,22 @@ const GameView = (gameController, hallOfFameController, dataPoolController, root
   dataPoolController.getObsIn('welcomeText').onChange(val => welcomeTextInputElt.value=val);
   welcomeTextInputElt.onchange = (e) => dataPoolController.getObsOut('welcomeText').setValue(e.target.value); 
   dataPoolController.getObsIn('welcomeText').onChange(val => welcomeTxtElt.innerHTML=val);
+
+  chatMsgElt.onchange = (e) => {
+    if(e.target.value==undefined||/^\s*$/.test(e.target.value)) return;
+    // dataPoolController.getObsOut('chatMsg').setValue(e.target.value); 
+    dataPoolController.getObsOut('chatMsg').setValue(JSON.stringify({userName:gameController.getUserName(), createdAt: new Date().getTime(), text:e.target.value})); 
+    e.target.value='';
+  } 
+  dataPoolController.getObsIn('chatMsg').onChange( val => {
+    if(val==undefined||/^\s*$/.test(val)) return;
+    const data = JSON.parse(val);
+    chatRoomElt.appendChild(dom(`<span>[${new Date(data.createdAt).toLocaleTimeString()}] ${data.userName==gameController.getUserName()?'>':'<'} <strong>${data.userName.toUpperCase()}</strong> : "${data.text}"</span>`));
+    // iici
+    chatRoomElt.appendChild(dom(`<br/>`));
+  });
+
+
 }
 
 // ---- js test -----
@@ -506,6 +536,8 @@ const init = (placeHolder) => {
   let partiesInfoView = PartiesInfoView(partiesInfoController, gameController, rootElt);
 
   gameController.setUserName(`John${random(100)} Do`);
+  // prevent all input fields from html injection
+  [...document.querySelectorAll('input, textarea')].forEach(elt=> elt.addEventListener("input", (e) => cleanHtml(e.target)));
 }
 
 //!\ add init() to global scope explicit to be used on onload

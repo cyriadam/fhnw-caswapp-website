@@ -30,6 +30,13 @@
         </style>
     </head>
     <body onload="init('.main-content')">
+        <div style="display:none;">
+            <img id="cellImg" src="/img/cell.png">
+            <img id="cellDeadImg" src="/img/cell-dead.png">
+            <img id="virusImg" src="/img/virus.png">
+            <img id="virusDeadImg" src="/img/virus-dead.png">
+            <img id="bombImg" src="/img/skull.png">
+        </div>
         <div class="main-content">
             {{>header}}
             <div id="controls">
@@ -57,6 +64,11 @@
             <div>
                 <h3>Hall of Fame</h3>
                 <div id="hallOfFame"/>
+            </div>
+            <div>
+                <h3>Chat Room</h3>
+                <input id="chatMsg" type="text" value="" /><br/>
+                <div id="chatRoom"/>
             </div>
             <div>
                 <h3>Admin</h3>

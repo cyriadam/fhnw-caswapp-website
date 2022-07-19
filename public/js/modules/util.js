@@ -46,4 +46,11 @@ Number.prototype.pad = function(size) {
     return Array(+(zero > 0 && zero)).join("0") + this;
 }
 
+String.prototype.toFixed = function(size) {
+    return size>this.length?(this + " ".repeat(size-this.length)):this.substring(0, size);
+}
+
 export const makeObj = (key, val) =>  Object.fromEntries(new Map([[key, val]]));
+
+// export const cleanHtml = elt => { elt.value=elt.value.replaceAll(/[!$(){}[\]:;<+?\\>]/g, ''); }
+export const cleanHtml = elt => { elt.value=elt.value.replaceAll(/[${}[\];<+\\>]/g, ''); }
