@@ -10,7 +10,7 @@ const appProperties = {
 
 const hbsProperties = { 
     author: 'Cyril Adam', 
-    info: 'Prof. Dierk Köning',
+    info: 'Prof. Dierk König',
 }
 
 const gameProperties = { 
