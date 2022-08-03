@@ -330,6 +330,7 @@ div.title-textshadow {
   top: -200px;
   left: 25%;
   opacity: 1;
+  pointer-events: none;
   /* animation: down-anim 4s forwards, fadeout-anim 1s 5s forwards */
 }
 
