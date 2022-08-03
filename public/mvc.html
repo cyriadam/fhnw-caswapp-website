@@ -17,32 +17,12 @@
     <h3>Test MCV Framework based on Observable...</h3>
     <p></p>
     <div>
-      <!-- 
-        <p><label>Name: </label><input id="name" type="text" onchange="((name) => {
-          alert(`you type[${name}]`);
-          toDoView.setName(name);
-          console.log('test...');
-          })(this.value)">
-        </p> 
-      -->
-      <p><label>Name: </label><input id="name" type="text" onchange="doSomething(this.value)"></p>
+      <p><label>Name: </label><input id="name" type="text" onchange="doSomething(this.value)" /></p>
       <p>Lg(name)=[<span id="name-lg"></span>]</p>
       <p>Upper(name)=[<span id="name-upper"></span>]</p>
     </div>
     <script>
-
-      toDoView = ToDoView(
-        document.querySelector('#name'), 
-        document.querySelector('#name-lg'), 
-        document.querySelector('#name-upper'), 
-      )
-
-      // document.querySelector('#name').onchange=(e)=>{
-      //   toDoView.setName(e.target.value);
-      //   console.log('name is updated');
-      // };
-
+      toDoView = ToDoView(document.querySelector("#name"), document.querySelector("#name-lg"), document.querySelector("#name-upper"));
     </script>
-
   </body>
 </html>

@@ -1,41 +1,41 @@
 const { makeObj } = require("./general");
 
 const Observable = (value) => {
-  const listerners = [];    // ICI : What about to put the listeners in a map and return a tocken when subscribing ?
+  const listerners = []; // ICI : What about to put the listeners in a map and return a tocken when subscribing ?
   let enable = true;
 
-  const remove = array => subscriber => {       // ICI : lambda : code modulaire, no ref to listerners array so flexible
+  const remove = (array) => (subscriber) => {
+    // ICI : lambda : code modulaire, no ref to listerners array so flexible
     const index = array.indexOf(subscriber);
-    if (index >= 0) { 
+    if (index >= 0) {
       array.splice(index, 1);
-    //   console.log(`Observable ==> remove index=${index} (count=${listerners.length})`);
-    } 
-  }
+      //   console.log(`Observable ==> remove index=${index} (count=${listerners.length})`);
+    }
+  };
 
   const listenersRemove = remove(listerners);
 
   const setValue = (newValue) => {
-    if(value===newValue) return;
+    if (value === newValue) return;
     const oldValue = value;
-    value=newValue;
-    if(!enable) return;
-    const safeIterate = [...listerners]; 
+    value = newValue;
+    if (!enable) return;
+    const safeIterate = [...listerners];
     safeIterate.forEach((subscriber) => subscriber(value, oldValue, () => listenersRemove(subscriber)));
-  }
-
+  };
 
   const onChange = (subscriber) => {
     // console.log(`Observable ==> add a new subscriber in listerners (count=${listerners.length})`)
     listerners.push(subscriber);
     subscriber(value, value, () => listenersRemove(subscriber));
-    return () => listenersRemove(subscriber)
-  }
+    return () => listenersRemove(subscriber);
+  };
 
-  const setEnable = (state=true) => {
-    if(enable==state) return;
-    enable=state;
-    if(enable) [...listerners].forEach((subscriber) => subscriber(value, value, () => listenersRemove(subscriber)));
-  }
+  const setEnable = (state = true) => {
+    if (enable == state) return;
+    enable = state;
+    if (enable) [...listerners].forEach((subscriber) => subscriber(value, value, () => listenersRemove(subscriber)));
+  };
 
   return {
     setValue,
@@ -43,9 +43,8 @@ const Observable = (value) => {
     onChange,
     enable: () => setEnable(true),
     diseable: () => setEnable(false),
-  }
-}
-
+  };
+};
 
 const ObservableList = (list) => {
   const onAddListeners = [];
@@ -54,76 +53,80 @@ const ObservableList = (list) => {
   const add = (item) => {
     // if(list.indexOf(item)!=-1) return; // list can contain doublons
     list.push(item);
-    onAddListeners.forEach(subscriber=>subscriber(item));
-  }
+    onAddListeners.forEach((subscriber) => subscriber(item));
+  };
 
   const del = (item) => {
     const i = list.indexOf(item);
-    if(i!=-1) list.splice(i, 1);
-    onDelListeners.forEach(subscriber=>subscriber(item));
-  }
+    if (i != -1) list.splice(i, 1);
+    onDelListeners.forEach((subscriber) => subscriber(item));
+  };
 
   return {
     getList: () => list,
-    onAdd: subscriber => {
-      onAddListeners.push(subscriber)
-      console.log(`ObservableList ==> add a new subscriber in onAddListeners (count=${onAddListeners.length})`)
+    onAdd: (subscriber) => {
+      onAddListeners.push(subscriber);
+      console.log(`ObservableList ==> add a new subscriber in onAddListeners (count=${onAddListeners.length})`);
     },
-    onDel: subscriber =>  {
-      onDelListeners.push(subscriber)
-      console.log(`ObservableList ==> add a new subscriber in onDelListeners (count=${onDelListeners.length})`)
+    onDel: (subscriber) => {
+      onDelListeners.push(subscriber);
+      console.log(`ObservableList ==> add a new subscriber in onDelListeners (count=${onDelListeners.length})`);
     },
     add,
     del,
-    clear: () => list.length=0,
+    clear: () => (list.length = 0),
     count: () => list.length,
-    countIf: (pre) => list.reduce((sum, item) => (pre(item)?sum+1:sum), 0),
+    countIf: (pre) => list.reduce((sum, item) => (pre(item) ? sum + 1 : sum), 0),
     find: (pre) => list.find(pre),
-  }
-}
+  };
+};
 
 // get the whole model on change
-const ObservableObject = model => {
-    const rawValue=Observable(JSON.stringify(model));
-    const observables = {};
+const ObservableObject = (model) => {
+  const rawValue = Observable(JSON.stringify(model));
+  const observables = {};
 
-    const hasObs = name => observables.hasOwnProperty(name);
+  const hasObs = (name) => observables.hasOwnProperty(name);
 
-    const getObs = (name, initialValue = null) => {
-       return hasObs(name)?observables[name]:observables[name]=Observable(initialValue);
-    }
+  const getObs = (name, initialValue = null) => {
+    return hasObs(name) ? observables[name] : (observables[name] = Observable(initialValue));
+  };
 
-    Object.keys(model).forEach(key=> {
-        const obs = getObs(key, model[key]);
-        obs.onChange((val, oldVal) => {
-            // console.log(`${key} updated [${oldVal}]->[${val}]`);
-            const value = JSON.parse(rawValue.getValue());
-            value[key]=val;
-            rawValue.setValue(JSON.stringify(value));
-        });
+  Object.keys(model).forEach((key) => {
+    const obs = getObs(key, model[key]);
+    obs.onChange((val, oldVal) => {
+      // console.log(`${key} updated [${oldVal}]->[${val}]`);
+      const value = JSON.parse(rawValue.getValue());
+      value[key] = val;
+      rawValue.setValue(JSON.stringify(value));
     });
+  });
 
-    const onChange = (subscriber) => {
-        const removeListener = rawValue.onChange((val, oldVal, removeListener) => {
-            subscriber(JSON.parse(val), JSON.parse(oldVal), removeListener);
-        });
-        return removeListener;
-    }
+  const onChange = (subscriber) => {
+    const removeListener = rawValue.onChange((val, oldVal, removeListener) => {
+      subscriber(JSON.parse(val), JSON.parse(oldVal), removeListener);
+    });
+    return removeListener;
+  };
 
-    const setValue = (obj) => {
-        rawValue.diseable();
-        Object.keys(observables).forEach(key=>observables[key].diseable());
-        Object.keys(obj).forEach(key => {
-            if(hasObs(key)) observables[key].setValue(obj[key]);
-            else observables[key]=Observable(obj[key]);    
-        });
-        Object.keys(observables).forEach(key=>observables[key].enable());
-        rawValue.enable();
-    }
+  const setValue = (obj) => {
+    rawValue.diseable();
+    Object.keys(observables).forEach((key) => observables[key].diseable());
+    Object.keys(obj).forEach((key) => {
+      if (hasObs(key)) observables[key].setValue(obj[key]);
+      else observables[key] = Observable(obj[key]);
+    });
+    Object.keys(observables).forEach((key) => observables[key].enable());
+    rawValue.enable();
+  };
 
-    return {
-        getObs, hasObs, onChange, setValue, getProperties: () => Object.keys(observables)
-    }
+  return {
+    getObs,
+    hasObs,
+    onChange,
+    setValue,
+    getProperties: () => Object.keys(observables),
+  };
 };
 /** test cases ** 
     const moi = ObservableObject({name:'adam', prenom:'cyril'});
@@ -140,60 +143,66 @@ const ObservableObject = model => {
 /* */
 
 // get all model properties on change
-const ObservableObjectProperties = model => {
-    const listerners = [];  
-    const observables = {};
+const ObservableObjectProperties = (model) => {
+  const listerners = [];
+  const observables = {};
 
-    const remove = array => subscriber => {
-        const index = array.indexOf(subscriber);
-        if(index >= 0) array.splice(index, 1);
-    }
-    const listenersRemove = remove(listerners);
+  const remove = (array) => (subscriber) => {
+    const index = array.indexOf(subscriber);
+    if (index >= 0) array.splice(index, 1);
+  };
+  const listenersRemove = remove(listerners);
 
-    const hasObs = name => observables.hasOwnProperty(name);
-    const getObs = (name, initialValue = null) => {
-        return hasObs(name)?observables[name]:observables[name]=Observable(initialValue);
-    }
+  const hasObs = (name) => observables.hasOwnProperty(name);
+  const getObs = (name, initialValue = null) => {
+    return hasObs(name) ? observables[name] : (observables[name] = Observable(initialValue));
+  };
 
-    const onChange = (subscriber) => {
-        listerners.push(subscriber);
-        Object.keys(observables).forEach(key => {
-            const val = observables[key].getValue();
-            subscriber(makeObj(key, val), makeObj(key, val), () => listenersRemove(subscriber));
-        });
-        return () => listenersRemove(subscriber);
-    }
-
-    const setValue = (obj) => {
-        Object.keys(obj).forEach(key => { 
-            if(hasObs(key)) observables[key].setValue(obj[key]); 
-            else {
-                const obs = getObs(key, obj[key]);
-                obs.onChange((val, oldVal) => {
-                    listerners.forEach(subscriber => subscriber(makeObj(key, val), makeObj(key, oldVal), () => listenersRemove(subscriber)));
-                });                
-            }
-        });
-    }
-
-    const getValue = name => hasObs(name)?observables[name].getValue():undefined;
-
-    Object.keys(model).forEach(key=> {
-        const obs = getObs(key, model[key]);
-        obs.onChange((val, oldVal) => {
-            listerners.forEach(subscriber => subscriber(makeObj(key, val), makeObj(key, oldVal), () => listenersRemove(subscriber)));
-        });
+  const onChange = (subscriber) => {
+    listerners.push(subscriber);
+    Object.keys(observables).forEach((key) => {
+      const val = observables[key].getValue();
+      subscriber(makeObj(key, val), makeObj(key, val), () => listenersRemove(subscriber));
     });
+    return () => listenersRemove(subscriber);
+  };
 
-    const getModel = () => {
-        const entries = [];
-        Object.keys(observables).forEach(key => entries.push([key, observables[key].getValue()]));
-        return Object.fromEntries(new Map(entries));
-    }
+  const setValue = (obj) => {
+    Object.keys(obj).forEach((key) => {
+      if (hasObs(key)) observables[key].setValue(obj[key]);
+      else {
+        const obs = getObs(key, obj[key]);
+        obs.onChange((val, oldVal) => {
+          listerners.forEach((subscriber) => subscriber(makeObj(key, val), makeObj(key, oldVal), () => listenersRemove(subscriber)));
+        });
+      }
+    });
+  };
 
-    return {
-        getObs, hasObs, onChange, setValue, getValue, getModel, getProperties: () => Object.keys(observables)
-    }
+  const getValue = (name) => (hasObs(name) ? observables[name].getValue() : undefined);
+
+  Object.keys(model).forEach((key) => {
+    const obs = getObs(key, model[key]);
+    obs.onChange((val, oldVal) => {
+      listerners.forEach((subscriber) => subscriber(makeObj(key, val), makeObj(key, oldVal), () => listenersRemove(subscriber)));
+    });
+  });
+
+  const getModel = () => {
+    const entries = [];
+    Object.keys(observables).forEach((key) => entries.push([key, observables[key].getValue()]));
+    return Object.fromEntries(new Map(entries));
+  };
+
+  return {
+    getObs,
+    hasObs,
+    onChange,
+    setValue,
+    getValue,
+    getModel,
+    getProperties: () => Object.keys(observables),
+  };
 };
 /** test cases ** 
     const dataPool = ObservableObjectProperties({var1:1, var2:2, var3:undefined});
@@ -211,4 +220,4 @@ const ObservableObjectProperties = model => {
     console.log(`[IICI-4] model=[${JSON.stringify(dataPool.getModel())}]`);
 /* */
 
-module.exports = { Observable, ObservableList, ObservableObject, ObservableObjectProperties}
+module.exports = { Observable, ObservableList, ObservableObject, ObservableObjectProperties };

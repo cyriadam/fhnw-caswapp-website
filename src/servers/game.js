@@ -1,4 +1,3 @@
-
 const { HallOfFameControler } = require("../game/hallOfFame");
 const { PartyControler } = require("../game/party");
 const { DataPoolController } = require("../game/dataPool");
@@ -14,21 +13,18 @@ const dataPool = DataPoolController();
 const partyControler = PartyControler(hallOfFame, dataPool);
 
 let clientsCount = Observable(0);
-clientsCount.onChange(value=>dataPool.setValue(makeObj('clientsCount', value)));
+clientsCount.onChange((value) => dataPool.setValue(makeObj("clientsCount", value)));
 
 const listen = (socket) => {
-    clientsCount.setValue(clientsCount.getValue()+1);
+  clientsCount.setValue(clientsCount.getValue() + 1);
 
-    socket.emit('init');
-    hallOfFame.listen(socket);
-    dataPool.listen(socket);
-    partyControler.listen(socket);
+  socket.emit("init");
+  hallOfFame.listen(socket);
+  dataPool.listen(socket);
+  partyControler.listen(socket);
 
-    // -- disconnect --
-    socket.on('disconnect', () => clientsCount.setValue(Math.max(clientsCount.getValue()-1, 0)));
-}
+  // -- disconnect --
+  socket.on("disconnect", () => clientsCount.setValue(Math.max(clientsCount.getValue() - 1, 0)));
+};
 
-module.exports = { listen }
-
-
-
+module.exports = { listen };

@@ -1,53 +1,62 @@
+import { dom } from "../utils/general.js";
+import { properties } from "../utils/presentationModel.js";
+import * as Log from "../utils/log4js.js";
 
-import { dom } from '../utils/general.js';
-import { properties } from '../utils/presentationModel.js';
-import * as Log from '../utils/log4js.js';
-
-export { hallOfFameProjector, pageCss }
+export { hallOfFameProjector, pageCss };
 
 Log.setLogLevel(Log.LEVEL_ERROR);
 
-const masterClassName = 'hallOfFame';
+const masterClassName = "hallOfFame";
 
 const toDoHallOfFameHeaderElt = (item) => {
-    // return dom(`<div>`+ATTRIBUTE_NAMES.map(attrName => `<span class="${masterClassName}-label">${item[0][attrName].getObs(properties.LABEL).getValue()}</span>`).join('')+`</div>`);
-    let itemElt = dom(`<div class="${masterClassName}-label">`+
-    `<span>${item[0].playerName.getObs(properties.LABEL).getValue()}</span>`+
-    `<span>${item[0].score.getObs(properties.LABEL).getValue()}</span>`+
-    `<span>${item[0].comment.getObs(properties.LABEL).getValue()}</span>`+
-    `<span>${item[0].createdAt.getObs(properties.LABEL).getValue()}</span>`+
-    `</div>`);
-    return itemElt;
-}
+  // return dom(`<div>`+ATTRIBUTE_NAMES.map(attrName => `<span class="${masterClassName}-label">${item[0][attrName].getObs(properties.LABEL).getValue()}</span>`).join('')+`</div>`);
+  let itemElt = dom(
+    `<div class="${masterClassName}-label">` +
+      `<span>${item[0].playerName.getObs(properties.LABEL).getValue()}</span>` +
+      `<span>${item[0].score.getObs(properties.LABEL).getValue()}</span>` +
+      `<span>${item[0].comment.getObs(properties.LABEL).getValue()}</span>` +
+      `<span>${item[0].createdAt.getObs(properties.LABEL).getValue()}</span>` +
+      `</div>`
+  );
+  return itemElt;
+};
 
 const toDoHallOfFameElt = (item) => {
-    let itemElt = dom(`<div class="${masterClassName}-row">`+
-        `<span class="${masterClassName}-${item.playerName.getObs(properties.NAME).getValue()}" id="${item.playerName.getQualifier()}">${item.playerName.getValue()}</span>`+
-        `<span class="${masterClassName}-${item.score.getObs(properties.NAME).getValue()}" id="${item.score.getQualifier()}">${item.score.getValue()}</span>`+
-        `<span class="${masterClassName}-${item.comment.getObs(properties.NAME).getValue()}" id="${item.comment.getQualifier()}">${item.comment.getValue()}</span>`+
-        `<span class="${masterClassName}-${item.createdAt.getObs(properties.NAME).getValue()}" id="${item.createdAt.getQualifier()}">${(item.createdAt.getValue() > 0 ? (new Date(item.createdAt.getValue())).toLocaleDateString() : '')}</span>`+
-        `</div>`);
-    return itemElt;
-}
+  let itemElt = dom(
+    `<div class="${masterClassName}-row">` +
+      `<span class="${masterClassName}-${item.playerName
+        .getObs(properties.NAME)
+        .getValue()}" id="${item.playerName.getQualifier()}">${item.playerName.getValue()}</span>` +
+      `<span class="${masterClassName}-${item.score.getObs(properties.NAME).getValue()}" id="${item.score.getQualifier()}">${item.score.getValue()}</span>` +
+      `<span class="${masterClassName}-${item.comment
+        .getObs(properties.NAME)
+        .getValue()}" id="${item.comment.getQualifier()}">${item.comment.getValue()}</span>` +
+      `<span class="${masterClassName}-${item.createdAt.getObs(properties.NAME).getValue()}" id="${item.createdAt.getQualifier()}">${
+        item.createdAt.getValue() > 0 ? new Date(item.createdAt.getValue()).toLocaleDateString() : ""
+      }</span>` +
+      `</div>`
+  );
+  return itemElt;
+};
 
 const hallOfFameProjector = (hallOfFameController, rootElt, hallOfFame) => {
-    Log.debug(`hallOfFameProjector.render()`);
-    if(!hallOfFame.length) return;
+  Log.debug(`hallOfFameProjector.render()`);
+  if (!hallOfFame.length) return;
 
-    let titleElt = rootElt.querySelector('#hallOfFame-title');
-    let listElt= rootElt.querySelector('#hallOfFame-list');
+  let titleElt = rootElt.querySelector("#hallOfFame-title");
+  let listElt = rootElt.querySelector("#hallOfFame-list");
 
-    if (!rootElt.classList.contains(`${masterClassName}`)) rootElt.classList.add(`${masterClassName}`);
-    if (!titleElt.classList.contains(`${masterClassName}-title`)) titleElt.classList.add(`${masterClassName}-title`);
-    if (!listElt.classList.contains(`${masterClassName}-list`)) listElt.classList.add(`${masterClassName}-list`);
+  if (!rootElt.classList.contains(`${masterClassName}`)) rootElt.classList.add(`${masterClassName}`);
+  if (!titleElt.classList.contains(`${masterClassName}-title`)) titleElt.classList.add(`${masterClassName}-title`);
+  if (!listElt.classList.contains(`${masterClassName}-list`)) listElt.classList.add(`${masterClassName}-list`);
 
-    titleElt.innerHTML = '';
-    listElt.innerHTML = '';
-    titleElt.insertAdjacentElement('beforeend', toDoHallOfFameHeaderElt(hallOfFame));
-    hallOfFame.forEach(item => listElt.insertAdjacentElement('beforeend', toDoHallOfFameElt(item)));
+  titleElt.innerHTML = "";
+  listElt.innerHTML = "";
+  titleElt.insertAdjacentElement("beforeend", toDoHallOfFameHeaderElt(hallOfFame));
+  hallOfFame.forEach((item) => listElt.insertAdjacentElement("beforeend", toDoHallOfFameElt(item)));
 
-    // Array.from(toDoHallOfFameHeaderElt(hallOfFame).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt));
-    // hallOfFame.forEach(item => Array.from(toDoHallOfFameElt(item).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt)) );
+  // Array.from(toDoHallOfFameHeaderElt(hallOfFame).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt));
+  // hallOfFame.forEach(item => Array.from(toDoHallOfFameElt(item).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt)) );
 };
 
 const pageCss = `
@@ -106,8 +115,8 @@ const pageCss = `
 `;
 
 // .${masterClassName}-list {
-//     height: 300px; 
-//     overflow-y: scroll; 
+//     height: 300px;
+//     overflow-y: scroll;
 // }
 // .${masterClassName}-list::-webkit-scrollbar {
 //     width: 0px;

@@ -10,10 +10,6 @@
 
 .plotter-function:hover,
 .plotter-function:focus {
-  /*
-    padding: 12px;
-    margin-top: -2px;
-    */
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
   border-color: #b7b7b7;
   transition: padding 0.1s, box-shadow 0.1s, border-color 0.1s;

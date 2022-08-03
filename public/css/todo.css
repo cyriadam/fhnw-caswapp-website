@@ -5,7 +5,9 @@
   border: 1px solid #c7c7c7;
 }
 
-#plus, #fortune, #listTasks {
+#plus,
+#fortune,
+#listTasks {
   position: relative;
   top: -1em;
 }

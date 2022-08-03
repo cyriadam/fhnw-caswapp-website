@@ -4,8 +4,8 @@ let logger = log4js.getLogger("cas-wapp".toFixed(10));
 logger.level = "error";
 
 const listen = (socket) => {
-    logger.debug('emit message(Welcome)')
-    socket.emit('message', createMessage('Welcome'));
-}
+  logger.debug("emit message(Welcome)");
+  socket.emit("message", createMessage("Welcome"));
+};
 
-module.exports = { listen }
+module.exports = { listen };

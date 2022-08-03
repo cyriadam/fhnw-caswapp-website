@@ -1,37 +1,37 @@
-import * as Lambda from './lambda.js';
-import {Observable } from "./observable.js";
-import {random, toNDecimal} from "./util.js";
+import * as Lambda from "./lambda.js";
+import { Observable } from "./observable.js";
+import { random, toNDecimal } from "./util.js";
 
-export { GameControler, GameView, init, Game }
-
+export { GameControler, GameView, init, Game };
 
 const init = (tatResults) => {
-  Lambda.either(
-      !tatResults.every(item=>item) ? Lambda.Left("tat errors detected") : Lambda.Right("ok")
-  )((err) => {
-      alert(err);
-  })
-  ((err) => {
-      console.log('Success : '+err);
-  })
-}
+  Lambda.either(!tatResults.every((item) => item) ? Lambda.Left("tat errors detected") : Lambda.Right("ok"))((err) => {
+    alert(err);
+  })((err) => {
+    console.log("Success : " + err);
+  });
+};
 
 let debug = false;
 
 let Game = (x, y, width, height) => {
   const boundaries = Lambda.pair(x)(y);
-  let cellSize =  Lambda.pair(width / Lambda.fst(boundaries))(height / Lambda.snd(boundaries));
+  let cellSize = Lambda.pair(width / Lambda.fst(boundaries))(height / Lambda.snd(boundaries));
   const framerate = 1000 / 24;
   const gravity = 9.81;
   const frottements = 0.99;
 
   return {
-    getFramerate : () => framerate,
-    getBoundaries : () => { return {x:Lambda.fst(boundaries), y:Lambda.snd(boundaries)} },
-    getCellSize : () => { return {width:Lambda.fst(cellSize), height:Lambda.snd(cellSize)} },
-    getGravity : () => gravity,
-    getFrottements : () => frottements,
-  }
+    getFramerate: () => framerate,
+    getBoundaries: () => {
+      return { x: Lambda.fst(boundaries), y: Lambda.snd(boundaries) };
+    },
+    getCellSize: () => {
+      return { width: Lambda.fst(cellSize), height: Lambda.snd(cellSize) };
+    },
+    getGravity: () => gravity,
+    getFrottements: () => frottements,
+  };
 };
 
 const GameControler = () => {
@@ -39,9 +39,9 @@ const GameControler = () => {
   let balls = [];
   let game;
 
-  const gameStarted=Observable(false);
-  const time=Observable(0);
-  const nbBallsActive=Observable(0);
+  const gameStarted = Observable(false);
+  const time = Observable(0);
+  const nbBallsActive = Observable(0);
   let nbBalls;
 
   const createBall = (id) => {
@@ -75,8 +75,8 @@ const GameControler = () => {
     };
     ball = {
       ...ball,
-      subscriptions:[]
-    }
+      subscriptions: [],
+    };
     return ball;
   };
 
@@ -85,10 +85,10 @@ const GameControler = () => {
       ball.coordOld = ball.coord;
 
       // apply the gravity
-      ball.delta.y = toNDecimal(ball.delta.y - game.getGravity() / game.getFramerate(), 5); 
+      ball.delta.y = toNDecimal(ball.delta.y - game.getGravity() / game.getFramerate(), 5);
       ball.coord = { x: ball.coord.x + ball.delta.x, y: ball.coord.y + ball.delta.y };
       if (debug) console.log("nextBoard", JSON.stringify(ball));
-  
+
       // manage game boundaries
       if (ball.coord.y <= ball.box.bottom) {
         ball.delta.y = toNDecimal(Math.abs(ball.delta.y * ball.elasticity), 5);
@@ -111,67 +111,66 @@ const GameControler = () => {
         ball.delta.x = ball.delta.x * game.getFrottements();
         if (debug) console.log("nextBoard-Left", JSON.stringify(ball));
       }
-  
+
       // stop the ball
       if (ball.coord.y === ball.box.bottom && Math.abs(ball.delta.y) < 0.2 && Math.abs(ball.delta.x) < 0.1) {
         if (debug) console.log("nextBoard-Stop", JSON.stringify(ball));
         ball.enable = false;
-        nbBallsActive.setValue(nbBallsActive.getValue()-1);
+        nbBallsActive.setValue(nbBallsActive.getValue() - 1);
       }
     }
   };
 
-  gameStarted.onChange(started=>{
-    if(started) {
+  gameStarted.onChange((started) => {
+    if (started) {
       // remove subscriptions
-      balls.forEach(ball=>ball.subscriptions.forEach(listenerRemove => listenerRemove()));
+      balls.forEach((ball) => ball.subscriptions.forEach((listenerRemove) => listenerRemove()));
 
       // create the balls
-      balls=[];
-      if(debug) console.log(`create ${nbBalls} balls`);
+      balls = [];
+      if (debug) console.log(`create ${nbBalls} balls`);
       Lambda.loopWhile(0)(Lambda.lt(nbBalls))(Lambda.inc(1))((i) => {
         let ball = createBall(i);
-        ball.subscriptions.push(time.onChange(()=>nextBoard(ball)));
+        ball.subscriptions.push(time.onChange(() => nextBoard(ball)));
         balls.push(ball);
-        nbBallsActive.setValue(nbBallsActive.getValue()+1);
-      }
-      );
-      intervalTimeId = setInterval(() => { time.setValue(Date.now()); }, game.getFramerate());
-    }
-    else clearInterval(intervalTimeId);
+        nbBallsActive.setValue(nbBallsActive.getValue() + 1);
+      });
+      intervalTimeId = setInterval(() => {
+        time.setValue(Date.now());
+      }, game.getFramerate());
+    } else clearInterval(intervalTimeId);
   });
 
   nbBallsActive.onChange((value, oldValue) => {
-    if(value==0&&oldValue!=value) gameStarted.setValue(false);
-
+    if (value == 0 && oldValue != value) gameStarted.setValue(false);
   });
 
   return {
-    init : val => game = val,
-    startGame : () => {
+    init: (val) => (game = val),
+    startGame: () => {
       gameStarted.setValue(true);
       // setTimeout(() => { gameStarted.setValue(false) }, 5000);
     },
-    setNbBalls : val => nbBalls=val,
-    onGameStarted : subscriber => gameStarted.onChange(subscriber),
-    onTimeChange: subscribe => time.onChange(subscribe),
+    setNbBalls: (val) => (nbBalls = val),
+    onGameStarted: (subscriber) => gameStarted.onChange(subscriber),
+    onTimeChange: (subscribe) => time.onChange(subscribe),
     getBalls: () => balls,
     //  TAT purpose
-    nextBoard,       
+    nextBoard,
     createBall,
-  }
-}
+  };
+};
 
 const GameView = (gameControler, canvas, backgroundImgElt, controlsElts) => {
   const game = Game(40, 20, canvas.width, canvas.height);
   gameControler.init(game);
 
   let context = canvas.getContext("2d");
-  let oscillator; 
-  let startGameElt=controlsElts.querySelector('#startGame'); 
-  let nbBallsElt=controlsElts.querySelector('#nbBalls'); 
-  
-  const initBoard = (context => () => {
+  let oscillator;
+  let startGameElt = controlsElts.querySelector("#startGame");
+  let nbBallsElt = controlsElts.querySelector("#nbBalls");
+
+  const initBoard = ((context) => () => {
     context.drawImage(backgroundImgElt, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
   })(context);
 
@@ -179,66 +178,67 @@ const GameView = (gameControler, canvas, backgroundImgElt, controlsElts) => {
     var contexteAudio = new (window.AudioContext || window.webkitAudioContext)();
     var oscillator = contexteAudio.createOscillator();
     oscillator.connect(contexteAudio.destination);
-    oscillator.type = 'square';
+    oscillator.type = "square";
     return oscillator;
   };
 
   /* ----------- */
   const renderSlider = (elt) => () => {
     elt.setAttribute("slider-value", elt.value);
-    let percent = (elt.value-elt.min)*100/(elt.max-elt.min);
-    elt.style.setProperty('--slider-percent', `${percent}%`); 
-    elt.style.setProperty('--background', getComputedStyle(elt).getPropertyValue("--background-template").replace("[[PERCENT]]", `${describeArc(15, 15, 14, 0, 3.5999*percent)}`));  
+    let percent = ((elt.value - elt.min) * 100) / (elt.max - elt.min);
+    elt.style.setProperty("--slider-percent", `${percent}%`);
+    elt.style.setProperty(
+      "--background",
+      getComputedStyle(elt)
+        .getPropertyValue("--background-template")
+        .replace("[[PERCENT]]", `${describeArc(15, 15, 14, 0, 3.5999 * percent)}`)
+    );
   };
 
   const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
-    const angleInRadians = (angleInDegrees-90) * Math.PI / 180.0;
+    const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
     return {
-      x: centerX + (radius * Math.cos(angleInRadians)),
-      y: centerY + (radius * Math.sin(angleInRadians))
+      x: centerX + radius * Math.cos(angleInRadians),
+      y: centerY + radius * Math.sin(angleInRadians),
     };
-  }
-  
+  };
+
   const describeArc = (x, y, radius, startAngle, endAngle) => {
-      const start = polarToCartesian(x, y, radius, endAngle);
-      const end = polarToCartesian(x, y, radius, startAngle);
-      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-      const d = [
-          "M", start.x, start.y, 
-          "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
-      ].join(" ");
-      return d;       
-  }
+    const start = polarToCartesian(x, y, radius, endAngle);
+    const end = polarToCartesian(x, y, radius, startAngle);
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(" ");
+    return d;
+  };
 
   gameControler.setNbBalls(nbBallsElt.value);
   nbBallsElt.addEventListener("input", (_) => gameControler.setNbBalls(nbBallsElt.value));
   initBoard();
 
   /* render all slider */
-  controlsElts.querySelectorAll('input[type=range].slider').forEach(elt=> {
+  controlsElts.querySelectorAll("input[type=range].slider").forEach((elt) => {
     renderSlider(elt)();
     elt.addEventListener("input", (_) => renderSlider(elt)());
-  }); 
-  
+  });
+
   /* test purpose */
-  controlsElts.querySelectorAll('.slider.test').forEach(elt=> {
+  controlsElts.querySelectorAll(".slider.test").forEach((elt) => {
     elt.addEventListener("input", (_) => console.log(`elt[${elt.id}].value=${elt.value}`));
   });
 
-  gameControler.onGameStarted(started=> {
-    if(started) {
+  gameControler.onGameStarted((started) => {
+    if (started) {
       initBoard();
-      startGameElt.setAttribute('disabled', 'true');
-      nbBallsElt.setAttribute('disabled', 'true');
-      if(gameControler.getBalls().length==1) {
+      startGameElt.setAttribute("disabled", "true");
+      nbBallsElt.setAttribute("disabled", "true");
+      if (gameControler.getBalls().length == 1) {
         oscillator = initBoardSound();
         oscillator.start();
       }
-    }
-    else {
+    } else {
       startGameElt.removeAttribute("disabled");
       nbBallsElt.removeAttribute("disabled");
-      if(gameControler.getBalls().length==1) oscillator.stop();
+      if (gameControler.getBalls().length == 1) oscillator.stop();
     }
   });
 
@@ -250,9 +250,9 @@ const GameView = (gameControler, canvas, backgroundImgElt, controlsElts) => {
   };
 
   const clearBoard = ((context, background) => () => {
-    if(debug) console.log('clearBoard');
+    if (debug) console.log("clearBoard");
 
-    gameControler.getBalls().forEach(ball => {
+    gameControler.getBalls().forEach((ball) => {
       let coord = convertToCanvas(ball.coordOld);
       // -- clear the previous ball
       let box = {
@@ -263,14 +263,13 @@ const GameView = (gameControler, canvas, backgroundImgElt, controlsElts) => {
       // context.clearRect(box.x, box.y, box.w, box.w);
       context.drawImage(background, box.x, box.y, box.w, box.w, box.x, box.y, box.w, box.w);
     });
-
   })(context, backgroundImgElt);
 
-  const renderBoard = (context => () => { 
-    gameControler.getBalls().forEach(ball => {
-    // -- render ball
+  const renderBoard = ((context) => () => {
+    gameControler.getBalls().forEach((ball) => {
+      // -- render ball
       let coord = convertToCanvas(ball.coord);
-      if(debug) console.log(` context.arc(${coord.x}, ${coord.y}, ${ball.radius}, 0, Math.PI * 2, true);`);
+      if (debug) console.log(` context.arc(${coord.x}, ${coord.y}, ${ball.radius}, 0, Math.PI * 2, true);`);
       context.beginPath();
       context.fillStyle = ball.color;
       context.arc(coord.x, coord.y, ball.radius, 0, Math.PI * 2, true);
@@ -280,15 +279,14 @@ const GameView = (gameControler, canvas, backgroundImgElt, controlsElts) => {
   })(context);
 
   const renderBoardSound = () => {
-    if(gameControler.getBalls().length==1) oscillator.frequency.value = 50+(gameControler.getBalls()[0].coord.y*10); 
+    if (gameControler.getBalls().length == 1) oscillator.frequency.value = 50 + gameControler.getBalls()[0].coord.y * 10;
   };
 
-  gameControler.onTimeChange(val=>{
-    if(val!==0) {
+  gameControler.onTimeChange((val) => {
+    if (val !== 0) {
       clearBoard();
       renderBoard();
       renderBoardSound();
     }
   });
-
-}
+};

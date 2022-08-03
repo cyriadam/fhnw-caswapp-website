@@ -1,62 +1,61 @@
-import {dom} from '../util.js';
+import { dom } from "../util.js";
 
-export { toDoItemProjector, pageCss }
+export { toDoItemProjector, pageCss };
 
-let debug=false;
+let debug = false;
 
 const toDoTextProjector = (item) => {
   let inputItem = dom(`<input id="TASK${item.id}_TXT" type="text" maxlength="100" value='${item.getText()}'>`);
   // -- binding GUI -> Model
-  inputItem.oninput=( _ => item.setText(inputItem.value));
+  inputItem.oninput = (_) => item.setText(inputItem.value);
   // -- binding Model -> GUI
-  item.onTextChange((val) => inputItem.value=val);
-  item.onTextEditableChange((editable)=>editable?inputItem.removeAttribute("readonly"):inputItem.setAttribute("readonly", "true"));
-  item.onTextValidChange((valid)=>valid?inputItem.setCustomValidity(''):inputItem.setCustomValidity('The text is invalid'));
+  item.onTextChange((val) => (inputItem.value = val));
+  item.onTextEditableChange((editable) => (editable ? inputItem.removeAttribute("readonly") : inputItem.setAttribute("readonly", "true")));
+  item.onTextValidChange((valid) => (valid ? inputItem.setCustomValidity("") : inputItem.setCustomValidity("The text is invalid")));
   return inputItem;
-}
+};
 
 const toDoDoneProjector = (item) => {
-  let checkboxItem = dom(`<input id="TASK${item.id}_CHK" type="checkbox" ${item.getDone()?'checked':''}>`);
+  let checkboxItem = dom(`<input id="TASK${item.id}_CHK" type="checkbox" ${item.getDone() ? "checked" : ""}>`);
   // -- binding GUI -> Model
-  checkboxItem.onclick=((e) => item.setDone(e.target.checked));
+  checkboxItem.onclick = (e) => item.setDone(e.target.checked);
   // -- binding Model -> GUI
   // item.onDoneChange(status=>checkboxItem.checked = status);  // Not needed : there are not business logic to change the done outside of the GUI
   return checkboxItem;
-}
+};
 
 const toDoDelProjector = (toDoControler, todoContainer, item) => {
   let delButtonItem = dom(`<button id="TASK${item.id}_DEL" class="btn delete">&times;</button>`);
   // binding GUI -> Controler
-  delButtonItem.onclick=( _ => {
+  delButtonItem.onclick = (_) => {
     toDoControler.delToDo(item.id);
-    todoContainer.querySelector('tbody').removeChild(todoContainer.querySelector(`#TASK${item.id}`));
-  });
+    todoContainer.querySelector("tbody").removeChild(todoContainer.querySelector(`#TASK${item.id}`));
+  };
   return delButtonItem;
-}
+};
 
-
-// Create the GUI and do the binding with the MODEL  
+// Create the GUI and do the binding with the MODEL
 // GUI elements are binded to the controller
 const toDoItemProjector = (toDoControler, todoContainer, todoItem) => {
-  if(debug) console.log('toDoItemTableProjector.renderToDoItem()');
+  if (debug) console.log("toDoItemTableProjector.renderToDoItem()");
 
-  let tableElement = todoContainer.querySelector('#toDo-table');
-  if(!tableElement) {
-    if(debug) console.log('create the table element');
+  let tableElement = todoContainer.querySelector("#toDo-table");
+  if (!tableElement) {
+    if (debug) console.log("create the table element");
     tableElement = dom(`<table id='toDo-table'><tbody><tr><th>Del</th><th>Description</th><th>Done</th></tr></tbody></table>`);
     todoContainer.appendChild(tableElement);
   }
 
   let inputItem = toDoTextProjector(todoItem);
   let checkboxItem = toDoDoneProjector(todoItem);
-  let delButtonItem = toDoDelProjector(toDoControler, tableElement, todoItem)
-  
-  let tableRowElement = dom(`<tr id='TASK${todoItem.id}'><td></td><td></td><td></td></tr>`, 'tbody');
-  tableRowElement.querySelector('td:nth-child(1)').appendChild(delButtonItem);
-  tableRowElement.querySelector('td:nth-child(2)').appendChild(inputItem);
-  tableRowElement.querySelector('td:nth-child(3)').appendChild(checkboxItem);
-  tableElement.querySelector('tbody').appendChild(tableRowElement);
-}
+  let delButtonItem = toDoDelProjector(toDoControler, tableElement, todoItem);
+
+  let tableRowElement = dom(`<tr id='TASK${todoItem.id}'><td></td><td></td><td></td></tr>`, "tbody");
+  tableRowElement.querySelector("td:nth-child(1)").appendChild(delButtonItem);
+  tableRowElement.querySelector("td:nth-child(2)").appendChild(inputItem);
+  tableRowElement.querySelector("td:nth-child(3)").appendChild(checkboxItem);
+  tableElement.querySelector("tbody").appendChild(tableRowElement);
+};
 
 const pageCss = `
   #toDo-table {

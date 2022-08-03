@@ -1,4 +1,3 @@
-
 // --- lamba exp ---
 export const id = (x) => x;
 const konst = (x) => (y) => x;
@@ -15,9 +14,11 @@ export const pairEquals = (x) => (y) => fst(x) === fst(y) && snd(x) === snd(y);
 const pairPlus = (a) => (b) => pair(fst(a) + fst(b))(snd(a) + snd(b));
 
 // Tuple
-export const Tuple = n => [
-    (...arg) => f => f(Object.seal(arg)),
-    ...Array.from({ length: n }, (val, idx) => t => t(id)[idx])
+export const Tuple = (n) => [
+  (...arg) =>
+    (f) =>
+      f(Object.seal(arg)),
+  ...Array.from({ length: n }, (val, idx) => (t) => t(id)[idx]),
 ];
 
 // Either

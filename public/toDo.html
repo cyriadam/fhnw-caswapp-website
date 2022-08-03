@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html>
-    <head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <link rel="icon" href="/img/favicon.png" />
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/todo.css" />
     <title>ToDo List</title>
-    </head>
-    <body>
-        <div class="main-content">
-            <div class="holder">
-                <button id="plus" class="btn" autofocus> + </button>
-                <div class="table" id="todoContainer"></div>
-                <p><br/></p>
-                <p>Tasks: <span id="numberOfTasks">0</span>, Open:  <span id="openTasks">0</span></p>
-            </div>
-        </div>
-<script type="module">
-    import { ToDoView, init } from "./js/modules/toDo.js";
-    import { tatResults } from "./js/modules/tests/toDoTest.js";
-    init(tatResults);
+  </head>
+  <body>
+    <div class="main-content">
+      <div class="holder">
+        <button id="plus" class="btn" autofocus>+</button>
+        <div class="table" id="todoContainer"></div>
+        <p><br /></p>
+        <p>Tasks: <span id="numberOfTasks">0</span>, Open: <span id="openTasks">0</span></p>
+      </div>
+    </div>
+    <script type="module">
+      import { ToDoView, init } from "./js/modules/toDo.js";
+      import { tatResults } from "./js/modules/tests/toDoTest.js";
+      init(tatResults);
 
-    let toDoView = ToDoView(
-        document.querySelector('#todoContainer'), 
-        document.querySelector('#numberOfTasks'), 
-        document.querySelector('#openTasks')
-    );
-    document.querySelector('#plus').onclick    = _ => toDoView.newToDo();
-    toDoView.newToDo();
-</script>        
-    </body>
+      let toDoView = ToDoView(document.querySelector("#todoContainer"), document.querySelector("#numberOfTasks"), document.querySelector("#openTasks"));
+      document.querySelector("#plus").onclick = (_) => toDoView.newToDo();
+      toDoView.newToDo();
+    </script>
+  </body>
 </html>
-

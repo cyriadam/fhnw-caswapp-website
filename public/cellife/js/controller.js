@@ -3,16 +3,15 @@
  */
 import { Observable } from "./utils/observable.js";
 
-export { SelectionController }
+export { SelectionController };
 
-const SelectionController = noSelection => {
+const SelectionController = (noSelection) => {
+  const selectedModelObs = Observable(noSelection);
 
-    const selectedModelObs = Observable(noSelection);
-
-    return {
-        setSelectedModel : selectedModelObs.setValue,
-        getSelectedModel : selectedModelObs.getValue,
-        onModelSelected: selectedModelObs.onChange,
-        clearSelection: () => selectedModelObs.setValue(noSelection),
-    }
+  return {
+    setSelectedModel: selectedModelObs.setValue,
+    getSelectedModel: selectedModelObs.getValue,
+    onModelSelected: selectedModelObs.onChange,
+    clearSelection: () => selectedModelObs.setValue(noSelection),
+  };
 };

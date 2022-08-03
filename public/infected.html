@@ -1,47 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <link rel="icon" href="/img/favicon.png" />
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="/css/game.css" />
     <link rel="stylesheet" href="/css/infected.css" />
     <title>Infected</title>
-</head>
-<body>
-<div style="display:none;">
-    <img id="cellImg" src="/img/cell.png">
-    <img id="virusImg" src="/img/virus.png">
-    <img id="anticorpsImg" src="/img/anticorps.png">
-</div>
-<h2 class="game-title">Infected</h2>
-<div>
-    <div style="position: relative">
-        <img src="/img/pain-texture.jpg" alt="abstrct painture" width="801px" height="401px"/>
-        <canvas style = "position: absolute; top:0; left:0;" class="game-canvas" width="800px" height="400px"></canvas>
+  </head>
+  <body>
+    <div style="display: none">
+      <img id="cellImg" src="/img/cell.png" />
+      <img id="virusImg" src="/img/virus.png" />
+      <img id="anticorpsImg" src="/img/anticorps.png" />
     </div>
-    <p>Score: <span id="score">0</span>, Nb bullets:  <span id="numberOfBullets">0</span></p>
-    <p>Cells: <span id="numberOfCells">0</span>, Virus:  <span id="numberOfVirus">0</span></p>
-    <p><button id="addCell">Add a Cell</button></p>
-    <p><button id="addVirus">Add a Virus</button></p>
-    <p><button id="addAnticorps">Add an Anticorps</button></p>
-</div>
-<script type="module">
-    import {View} from './js/modules/infected.js';
-    let view = View(
-        document.querySelector('.game-canvas'), 
-        document.querySelector('#addCell'), 
-        document.querySelector('#addVirus'),
-        document.querySelector('#addAnticorps'),
-        document.querySelector('#numberOfCells'),
-        document.querySelector('#numberOfVirus'),
-        document.querySelector('#score'),
-        document.querySelector('#numberOfBullets'),
-        document.querySelector('#cellImg'),
-        document.querySelector('#virusImg'),
-        document.querySelector('#anticorpsImg'),
-    );
-    view.startGame();
-</script>
-</body>
+    <h2 class="game-title">Infected</h2>
+    <div>
+      <div style="position: relative">
+        <img src="/img/pain-texture.jpg" alt="abstrct painture" width="801px" height="401px" />
+        <canvas style="position: absolute; top: 0; left: 0" class="game-canvas" width="800px" height="400px"></canvas>
+      </div>
+      <p>Score: <span id="score">0</span>, Nb bullets: <span id="numberOfBullets">0</span></p>
+      <p>Cells: <span id="numberOfCells">0</span>, Virus: <span id="numberOfVirus">0</span></p>
+      <p><button id="addCell">Add a Cell</button></p>
+      <p><button id="addVirus">Add a Virus</button></p>
+      <p><button id="addAnticorps">Add an Anticorps</button></p>
+    </div>
+    <script type="module">
+      import { View } from "./js/modules/infected.js";
+      let view = View(
+        document.querySelector(".game-canvas"),
+        document.querySelector("#addCell"),
+        document.querySelector("#addVirus"),
+        document.querySelector("#addAnticorps"),
+        document.querySelector("#numberOfCells"),
+        document.querySelector("#numberOfVirus"),
+        document.querySelector("#score"),
+        document.querySelector("#numberOfBullets"),
+        document.querySelector("#cellImg"),
+        document.querySelector("#virusImg"),
+        document.querySelector("#anticorpsImg")
+      );
+      view.startGame();
+    </script>
+  </body>
 </html>

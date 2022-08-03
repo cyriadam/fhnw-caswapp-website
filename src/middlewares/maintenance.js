@@ -7,7 +7,6 @@ const {
 
 module.exports = (req, res, next) => {
   logger.info(`Maintenance is ${maintenanceMode ? "ON" : "OFF"}`);
-  if (maintenanceMode)
-    res.status(503).send("Server is under maintenance, please come back later");
+  if (maintenanceMode) res.status(503).send("Server is under maintenance, please come back later");
   else next();
 };

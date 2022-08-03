@@ -1,46 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <link rel="icon" href="/img/favicon.png" />
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/game.css" />
     <script id="template-succeed" type="text/html">
-        <li class="succeed">
+      <li class="succeed">
         <div class="tat-item-container">
-        <p class="tat-item-title_succeed">${id}</p>
-        <p>All ${nb} test-cases succeed</p>
+          <p class="tat-item-title_succeed">${id}</p>
+          <p>All ${nb} test-cases succeed</p>
         </div>
-        </li>
-    </script> 
+      </li>
+    </script>
     <script id="template-failed" type="text/html">
-        <li class="failed">
+      <li class="failed">
         <div class="tat-item-container">
-        <p class="tat-item-title_failed">${id}</p>
-        <p>${nbFails}/${nb} test-cases failed</p>
+          <p class="tat-item-title_failed">${id}</p>
+          <p>${nbFails}/${nb} test-cases failed</p>
         </div>
-        <div class="usecase-item-container">
-        ${failsInnerHtml}
-        </div>
-        </li>  
+        <div class="usecase-item-container">${failsInnerHtml}</div>
+      </li>
     </script>
     <script id="template-usecase" type="text/html">
-        <p class="usecase-title">test-case <span>#${id}</span> :</p>
-        <p class="usecase-desc">${desc}</p>
+      <p class="usecase-title">test-case <span>#${id}</span> :</p>
+      <p class="usecase-desc">${desc}</p>
     </script>
     <title>TAT</title>
-</head>
-<body>
-<h2 class="game-title">All Tests in HtmlJs</h2>
-<ul class="tat-items" id="tatContainer"></ul>
-<script type="module">
-    import { allTat }  from './js/modules/test.js';
-    import './js/modules/tests/utilTest.js';
-    import './js/modules/tests/observableTest.js';
-    // import './js/modules/tests/dataflowTest.js';
-    import './js/modules/tests/toDoTest.js';
-    let $tatContainer = document.querySelector("#tatContainer");
-    allTat.render($tatContainer);
-</script>
-</body>
+  </head>
+  <body>
+    <h2 class="game-title">All Tests in HtmlJs</h2>
+    <ul class="tat-items" id="tatContainer"></ul>
+    <script type="module">
+      import { allTat } from "./js/modules/test.js";
+      import "./js/modules/tests/utilTest.js";
+      import "./js/modules/tests/observableTest.js";
+      // import './js/modules/tests/dataflowTest.js';
+      import "./js/modules/tests/toDoTest.js";
+      let $tatContainer = document.querySelector("#tatContainer");
+      allTat.render($tatContainer);
+    </script>
+  </body>
 </html>

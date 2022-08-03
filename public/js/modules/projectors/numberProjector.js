@@ -1,4 +1,4 @@
-export { numberProjector, pageCss }
+export { numberProjector, pageCss };
 
 const numberProjector = (rootElement, value) => {
   rootElement.innerHTML = value;

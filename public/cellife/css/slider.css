@@ -1,43 +1,46 @@
 input.slider {
-  -webkit-appearance: none; 
+  -webkit-appearance: none;
   position: relative;
   margin-right: 20px;
   margin-left: 14px;
 
-  width:300px;
+  width: 300px;
   height: 10px;
-  border-radius: 5px;  
+  border-radius: 5px;
   background: #ebebeb;
   border: 1px solid hwb(0 78% 22%);
   outline: none;
   --background-template: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30px' height='30px'><path fill='none' d='M 14.997905604908238 3.000000182770451 A 12 12 0 1 0 15 3' stroke='red' stroke-width='1'></path><path id='percent' fill='none' d='[[PERCENT]]' stroke='rgb(255, 0, 0)' stroke-width='4'></path></svg>");
 }
+
 input.slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 1px;
   height: 1px;
 }
+
 input.slider::after {
   content: attr(slider-value);
   background-image: var(--background);
   position: absolute;
   top: 50%;
   left: var(--slider-percent);
-  transform:translate(-50%, -50%);
+  transform: translate(-50%, -50%);
   background-color: white;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   border: 1px solid red;
   width: 30px;
   height: 30px;
-  border-radius: 50%;  
-  display:flex;
-  flex-direction:row;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   cursor: ew-resize;
 }
-input.slider:hover::after{
+
+input.slider:hover::after {
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
   transition: box-shadow 0.1s;
 }

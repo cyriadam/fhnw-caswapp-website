@@ -14,9 +14,11 @@ const pairEquals = (x) => (y) => fst(x) === fst(y) && snd(x) === snd(y);
 const pairPlus = (a) => (b) => pair(fst(a) + fst(b))(snd(a) + snd(b));
 
 // Tuple
-const Tuple = n => [
-  (...arg) => f => f(Object.seal(arg)),
-  ...Array.from({length:n}, (val, idx) => t => t(id)[idx])
+const Tuple = (n) => [
+  (...arg) =>
+    (f) =>
+      f(Object.seal(arg)),
+  ...Array.from({ length: n }, (val, idx) => (t) => t(id)[idx]),
 ];
 
 // Either
@@ -37,8 +39,6 @@ const boucle = (x) => (p) => x > 0 ? (p(), boucle(x - 1)(p)) : null;
 const tantQue = (x) => (c) => (n) => (p) => c(x) ? (p(x), tantQue(n(x))(c)(n)(p)) : null;
 const ifelse = (c) => (x) => (y) => c(x)(y) ? Right(fst(x)(y)) : Left(fst(x)(y));
 const compare = (c) => (x) => (y) => c(x)(y) ? snd(x)(y) : fst(x)(y);
-
-
 
 /*
 // Tests

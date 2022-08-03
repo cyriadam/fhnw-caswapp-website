@@ -28,7 +28,7 @@ body {
   line-height: 1.4;
 
   --collapse-height: 80vh;
-  --arrow-size:       1em;
+  --arrow-size: 1em;
 }
 
 footer {
@@ -321,9 +321,9 @@ img.portrait {
 /* expanded div */
 div.collapsible {
   /* padding-left: calc(var(--arrow-size) / 2); */
-  max-height:   var(--collapse-height);
-  overflow-y: scroll; 
-  transition:   max-height 0.5s ease-out;
+  max-height: var(--collapse-height);
+  overflow-y: scroll;
+  transition: max-height 0.5s ease-out;
   -ms-overflow-style: none; /* for Internet Explorer, Edge */
   scrollbar-width: none; /* for Firefox */
 }
@@ -332,34 +332,33 @@ div.collapsible::-webkit-scrollbar {
   display: none; /* for Chrome, Safari, and Opera */
 }
 
-
 /* collapsed div */
-input[type=checkbox]:checked + label + div.collapsible {
+input[type="checkbox"]:checked + label + div.collapsible {
   max-height: 0;
-  transition:  max-height 0.5s ease-out;
-} 
+  transition: max-height 0.5s ease-out;
+}
 label.toggle {
   margin-top: 18px;
   margin-bottom: 18px;
 }
-input[type=checkbox].hidden {
+input[type="checkbox"].hidden {
   display: none;
 }
 
-input[type=checkbox].hidden + label.toggle::before {
-  content:    '';
-  display:    inline-block;
-  position:    relative;
-  top:        0.2em;
-  width:      var(--arrow-size);
-  height:     var(--arrow-size);
+input[type="checkbox"].hidden + label.toggle::before {
+  content: "";
+  display: inline-block;
+  position: relative;
+  top: 0.2em;
+  width: var(--arrow-size);
+  height: var(--arrow-size);
   background: darkgray;
-  clip-path:  polygon(0 0, 100% 0%, 50% 100%);
+  clip-path: polygon(0 0, 100% 0%, 50% 100%);
   transition: transform 0.5s;
 }
 
-input[type=checkbox]:checked + label.toggle::before {
-  transform:  rotate(-90deg);
+input[type="checkbox"]:checked + label.toggle::before {
+  transform: rotate(-90deg);
   transition: transform 0.5s;
 }
 
@@ -368,7 +367,7 @@ label.switch {
   cursor: pointer;
   width: 60px;
   height: 30px;
-  background-color:#ebebeb;
+  background-color: #ebebeb;
   border-radius: 100px;
   display: inline-block;
   position: relative;
@@ -376,20 +375,20 @@ label.switch {
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 label.switch::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 22px;
   height: 22px;
   border-radius: 100px;
   display: inline-block;
   background-color: white;
-  border: 1px solid #c7c7c7;;
+  border: 1px solid #c7c7c7;
   top: 2px;
   left: 3px;
   transition: 0.3s;
 }
-input[type=checkbox]:checked + label.switch {
-  background-color:#c7c7c7 ;
+input[type="checkbox"]:checked + label.switch {
+  background-color: #c7c7c7;
 }
 label.switch:active::after {
   width: calc(75% - 3px);
@@ -398,8 +397,7 @@ label.switch:hover {
   box-shadow: rgba(149, 157, 165, 0.4) 0px 8px 24px;
   transition: box-shadow 0.1s;
 }
-input[type=checkbox]:checked + label.switch::after {
+input[type="checkbox"]:checked + label.switch::after {
   left: calc(100% - 3px);
   transform: translateX(-100%);
 }
-
