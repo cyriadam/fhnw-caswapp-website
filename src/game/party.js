@@ -6,7 +6,7 @@ const { Game, GameControler } = require("./game");
 
 const log4js = require("../services/log4j");
 let logger = log4js.getLogger("partyCtrl".toFixed(10));
-// logger.level = "debug";
+logger.level = "error";
 
 const partyIdSequence = sequence();
 const playerIdSequence = sequence();
@@ -18,7 +18,7 @@ const Party = (partyId, nbPlayers, partyName, playerName, hallOfFame) => {
     const expired = Observable(false);
     const game = Game(dataPool.getValue('nbPlayerBullets'), dataPool.getValue('nbBombs'), dataPool.getValue('gameDuration'), dataPool.getValue('gameTimeOut'));
     const players = { data: [] };
-    const gameControler = GameControler(game, players, hallOfFame, {partyName, nbPlayers}); // pass players by reference
+    const gameControler = GameControler(game, players, hallOfFame, {partyId, partyName, nbPlayers}); // pass players by reference
     const info = ObservableObject({id:partyId, nbPlayers, name:partyName, createdBy:playerName, createdAt: new Date().getTime(), players:[], status:'open'});
 
     gameControler.gameStarted.onChange((started) => {
@@ -36,8 +36,8 @@ const Party = (partyId, nbPlayers, partyName, playerName, hallOfFame) => {
     expired.onChange((expired) => {
         if (expired) {
             players.data.forEach((player) => {
-                logger.debug(`emit 'partyTimeOut' to player ${player.playerName}`);
-                player.socket.emit("partyTimeOut");
+                logger.debug(`emit partyTimeOut(partyId=[${partyId}]) to player ${player.playerName}`);
+                player.socket.emit("partyTimeOut", partyId);
             });
         }
     });
@@ -123,7 +123,7 @@ const PartyControler = (hallOfFame, dataPoolInstance) => {
         let playerId = party.addPlayer(socket, playerName);
         logger.info(`player(id=${playerId}, name=[${playerName}]) joins party(id=${party.id}, name=[${party.name}])`);
 
-        return playerId;
+        return { playerId, partyName:party.name };
     };
 
     const listen = (socket) => {
@@ -144,7 +144,7 @@ const PartyControler = (hallOfFame, dataPoolInstance) => {
             logger.info(`WebSocket(id=${socket.id}) send newParty(nbPlayers=${nbPlayers}, partyName=[${partyName}], playerName=[${playerName}])`); 
             try {
                 let partyId = newParty(nbPlayers, partyName, playerName);      
-                let playerId = joinParty(socket, partyId, playerName);
+                let {playerId} = joinParty(socket, partyId, playerName);
                 if(callback) callback(createResponse({partyId, playerId}));       
             } catch(err) {
                 if(callback) callback(createResponse(undefined, err.message));       
@@ -154,8 +154,8 @@ const PartyControler = (hallOfFame, dataPoolInstance) => {
         socket.on('joinParty', ({partyId, playerName}, callback) => {
             logger.info(`WebSocket(id=${socket.id}) send joinParty(${partyId})`); 
             try {
-                let playerId = joinParty(socket, partyId, playerName);          
-                if(callback) callback(createResponse({playerId}));    
+                let {playerId, partyName} = joinParty(socket, partyId, playerName);          
+                if(callback) callback(createResponse({playerId, partyName}));    
             } catch(err) {
                 if(callback) callback(createResponse(undefined, err.message));   
             }

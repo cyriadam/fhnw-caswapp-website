@@ -1,6 +1,6 @@
 
 runTests=tat('Module TODO v3 / test-cases-1', (assert) => {
-  const todoContainer = document.createElement("div");
+    const todoContainer = document.createElement("div");
   const numberOfTasksContainer = document.createElement("div");
   const openTasksContainer = document.createElement("div");
   toDoView = ToDoView(todoContainer, numberOfTasksContainer, openTasksContainer);

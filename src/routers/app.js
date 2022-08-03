@@ -45,20 +45,13 @@ router.get("/about", (req, res) => {
   res.render("about", { ...hbsProperties, title: "About Me" });
 });
 
-router.get("/cellife", (req, res) => {
-  res.render("cellife", { ...hbsProperties, title: "Cellife" });
-});
-
 router.get("/infected", (req, res) => {
   res.render("infected", { ...hbsProperties, title: "Infected" });
 });
 
 router.get("/help", (req, res) => {
   logger.info(`access to 'help' page`);
-  res.render("help", {
-    ...hbsProperties,
-    title: "Help",
-  });
+  res.render("help", { ...hbsProperties, title: "Help" });
 });
 
 module.exports = router;

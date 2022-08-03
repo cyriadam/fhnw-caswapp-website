@@ -9,7 +9,6 @@ const logger = log4js.getLogger("hallOfFame".toFixed(10));
 const OneDay = 24*60*60*1000;
 logger.level = "error";
 
-
 const HallOfFameControler = () => {
 
     const hallOfFame = Observable([]);
@@ -19,7 +18,7 @@ const HallOfFameControler = () => {
     const cleanScores = (scores) => {
         let now =new Date().getTime();
         [...scores].filter(a => a.createdAt>0&&now-a.createdAt>hallOfFameExpiredDelay*OneDay).forEach(score=>logger.info(`remove expired score of ${score.playerName} from hallOfFame`));
-        return [...scores, ...filler].filter(a => (a.createdAt<0||hallOfFameExpiredDelay<=0||now-a.createdAt<hallOfFameExpiredDelay*OneDay)).sort((a, b) => a.score > b.score ? -1 : 1).slice(0, hallOfFameNbRecords-1);
+        return [...scores, ...filler].filter(a => (a.createdAt<0||hallOfFameExpiredDelay<=0||now-a.createdAt<hallOfFameExpiredDelay*OneDay)).sort((a, b) => a.score > b.score ? -1 : 1).slice(0, hallOfFameNbRecords);
     }
 
     const loadHallOfFame = async () => {
@@ -54,7 +53,7 @@ const HallOfFameControler = () => {
         }
     }
 
-    const isHighScore = score => hallOfFame.getValue().some(item => item.score <= score);
+    const isHighScore = score => hallOfFame.getValue().some(item => item.score < score);
 
     const addHighScore = (playerId, playerName, score) => {
         let scores = hallOfFame.getValue();

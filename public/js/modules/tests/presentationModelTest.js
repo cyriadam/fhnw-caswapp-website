@@ -1,7 +1,7 @@
 import { Attribute, properties as AttProps } from "./../presentationModel.js";
 import { tat } from "./../test.js";
 
-tat('Module Attribute Milestone2 / test-cases-1', (assert) => {
+tat('Attribute', (assert) => {
   let attr = Attribute("init");
   
   assert.equals(attr.getObs(AttProps.VALUE).getValue(), "init");

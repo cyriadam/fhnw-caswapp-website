@@ -4,7 +4,7 @@ import { GameControler, GameView, Game } from "../ball-milestone2.js";
 
 export {tatResults}
 
-let tatResults=tat('Module Balls milestone2 / test-cases-1', (assert) => {
+let tatResults=tat('Balls / Module GameController', (assert) => {
 
   let gameControler=GameControler();
   const game = Game(40, 20, 400, 200);

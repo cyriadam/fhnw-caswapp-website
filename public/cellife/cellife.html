@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Cellife</title>
+    <link rel="icon" href="./img/favicon.png" />
+    <link rel="stylesheet" href="./css/general.css" />
+    <link rel="stylesheet" href="./css/slider.css" />
+    <link rel="stylesheet" href="./css/cellife.css" />
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+</head>
+
+<body>  
+    <!-- embedded images-->
+    <div style="display:none;">
+        <img id="cellImg" alt="image of a cell" src="/img/cell.png">
+        <img id="cellDeadImg" alt="image of a dead cell" src="/img/cell-dead.png">
+        <img id="virusImg" alt="image of a virus" src="/img/virus.png">
+        <img id="virusDeadImg" alt="image of a dead cell" src="/img/virus-dead.png">
+        <img id="bombImg" alt="image of a Bombs" src="/img/skull.png">
+    </div>
+    <!-- embedded sound -->
+    <audio id="soundGameOn" src="/cellife/sounds/GAMEON.WAV"></audio>
+    <audio id="soundGameEnd" src="/cellife/sounds/GAMEEND.WAV"></audio>
+    <audio id="soundBlip" src="/cellife/sounds/BLIP1.WAV"></audio>
+    <audio id="soundFanfare" src="/cellife/sounds/FANFARE.WAV"></audio>
+    <main>
+        <header><h1>Cellife</h1><span>There are <span id="clientsCount">0</span> connected user(s)</span></header>
+        <div id="main-content">
+            <!-- -->
+            <section id="section-menu">
+            </section>
+            <!-- -->
+            <section id="section-splash" class="screen close-section">
+                <div id="prelude">A long time ago in a human body far, far away ....</div>
+                <div id="intro">
+                    <div id="introContent">
+                        <h2>Cells Wars<br /><br />Episode III</h2>
+                        <h2>The revenge of the Lymphocytes</h2>
+                        <p>It's the war ! The Republic is crumbling under the attacks of the ruthless poliovirus, Comte Dooku. 
+                           There are heroes on both sides. Evil is everywhere.</p>
+                        <p>With staggering audacity, the diabolical virus leader General Grievous crosses the cytoplasmic barrier of the body.
+                           to infect the host genome chromosome, Chancellor Palpatine, Supreme Leader of the cells replication.</p>
+                        <p>As the Separatist Army attempts to leave the beleaguered capital with its precious
+                           hostage, a Jedi Cell leads a desperate mission to rescue the captive Chancellor....</p>
+                    </div>
+                </div>
+            </section>
+            <!-- -->
+            <section id="section-game" class="screen close-section">
+                <h2 id="welcomeTxt"></h2>
+                <hr>
+                <!-- gameboard -->
+                <div id="party-controller" class="wrapper-item">
+                    <div class="wrapper-item"><input id="togglePlaceholder" class="hidden" type="checkbox" /><label for="togglePlaceholder" class="switch"></label></div>
+                    <div class="box"><ion-icon name="person-outline"></ion-icon><span id="message"></span></div>
+                    <div class="wrapper-item">
+                        <!-- create/leave party -->
+                        <button id="newParty" type="button" class="btn"><ion-icon class="icon" name="create-outline"></ion-icon>Create Party</button> 
+                        <button id="leaveParty" type="button" class="btn"><ion-icon class="icon" name="exit-outline"></ion-icon>Leave Party</button>
+                    </div>
+                </div>
+
+                <div id="placeholder-gameboard">
+                    <div id="placeholder-game">
+                        <!-- game -->
+                        <div class="wrapper-game">
+                            <!-- game info -->
+                            <div class="game-info hidden" id="game-info_time"><label>Timer : </label><span id="currPartyTimer"></span> s</div>
+                            <div class="game-info hidden" id="game-info_bullets"><span id="nbBullets"></span></div>
+                            <div class="game-info wrapper-item hidden" id="game-info_score">
+                                <div><label>Score : </label><span id="score"></span> - <label>High Score : </label><span id="highScore"></span></div>
+                            </div>
+                        </div>
+                        <div id="wrapper-canvas">
+                            <img id="background" src="/img/pain-texture.jpg" alt="abstract painture"/>
+                            <canvas class="game-canvas" width="800" height="800"></canvas>
+                        </div>
+                        <div class="wrapper-game">
+                            <div class="game-info hidden" id="game-info_partyName"><span id="currPartyName"></span></div>
+                        </div>
+                    </div>                    
+                    <!-- parties -->
+                    <div id="placeholder-party">
+                        <div id="wrapper-parties">
+                            <div id="parties-list"></div>
+                        </div>
+                        <div id="party-detail"></div>
+                    </div>
+                    <!-- chat room -->
+                    <div id="placeholder-chat">
+                        <div id="wrapper-chat">
+                            <div class="wrapper-item">
+                                <span class="wrapper-input" error-text=""><input id="username" class="input-btn" type="text" value="John Do" maxlength="20" size="25" placeholder="Your Name" /></span>
+                                <input id="chatMsg" class="input-btn" type="text" value="" maxlength="50" size="60" placeholder="Enter a message" />
+                            </div>
+                            <div id="chatRoom"></div>
+                        </div>   
+                    </div>
+                </div>
+                <!-- dialogs -->
+                <dialog id="dialog-newParty">
+                    <header>
+                        <span>Create Party</span>
+                        <button class="btn dialog-close"><ion-icon name="close-outline"></ion-icon></button>
+                    </header>
+                    <main>
+                        <form method="dialog" onkeydown="return event.key != 'Enter';">
+                            <div id="party-settings">
+                                <label>Nb Players : </label><input type="range" min="1" max="6" value="2" class="slider" id="nbPlayers" />
+                                <label>Party Name : </label><span class="wrapper-input" error-text=""><input id="partyName" class="input-btn" type="text" value="" maxlength="35" size="40" placeholder="Name of the Party" /></span>
+                            </div>
+                            <div class="wrapper-btn">
+                                <button class="btn dialog-close" type="button">Cancel</button>
+                                <button class="btn" value="submit">Submit</button>
+                            </div>
+                        </form>
+                    </main>
+                </dialog>
+                <dialog id="dialog-highScore">
+                    <header>
+                        <span>HighScore</span>
+                        <button class="btn dialog-close"><ion-icon name="close-outline"></ion-icon></button>
+                    </header>
+                    <main>
+                        <h2>Congratulation!</h2>
+                        <p>You have a highScore!</p>
+                        <form method="dialog" onkeydown="return event.key != 'Enter';">
+                            <div id="highScore-settings">
+                                <label>Comment : </label><span class="wrapper-input" error-text=""><input id="highScoreComment" class="input-btn" type="text" value="" maxlength="35" size="40" placeholder="HighScore Comment" /></span>
+                            </div>
+                            <div class="wrapper-btn">
+                                <button class="btn dialog-close" type="button">Cancel</button>
+                                <button class="btn" value="submit">Submit</button>
+                            </div>
+                        </form>
+                    </main>
+                </dialog>
+                <!-- messages -->
+                <div id="message-animated" class="title-textshadow"><h1 class='title-textshadow' data-shadow=''></h1></div>      
+            </section>
+            <!--  -->
+            <section id="section-hof" class="screen close-section">
+                <h2>Hall Of Fame</h2>
+                <div id="wrapper-hallOfFame">
+                    <div id="hallOfFame-title"></div>
+                    <div id="hallOfFame-list"></div>
+                </div>
+            </section>
+            <!-- -->
+            <section id="section-help" class="screen close-section">
+                <h2>How to play</h2>
+                <hr>
+                <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+                <h2>Rules</h2>
+                <hr>
+                <ul>
+                    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+                    <li>Aliquam tincidunt mauris eu risus.</li>
+                    <li>Vestibulum auctor dapibus neque.</li>
+                 </ul>
+            </section>
+            <!-- -->
+            <section id="section-settings" class="screen close-section">
+                <h2>Settings</h2>
+                <hr>
+                <div id="user-settings">
+                    <span>Music : </span>
+                    <div class="wrapper-item">
+                        <span>OFF</span>
+                        <input id="toggleMusic" class="hidden persist" type="checkbox" checked /><label for="toggleMusic" class="switch"></label>
+                        <span>ON</span>
+                    </div>
+                </div>
+            </section>
+            <!-- -->
+            <section id="section-admin" class="screen close-section">
+                <h2>Game Settings</h2>
+                <hr>
+                <div id="game-settings">
+                    <span>Nb Bullets : </span><input type="range" min="0" max="5" value="0" class="slider" id="nbPlayerBullets" />
+                    <span>Nb Bombs : </span><input type="range" min="0" max="20" value="0" class="slider" id="nbBombs" />
+                    <span>Game Duration : </span><input type="range" min="0" max="180" value="0" step="30" class="slider" id="gameDuration" />
+                    <span>Game Timeout : </span><input type="range" min="0" max="180" value="0" step="30" class="slider" id="gameTimeOut" />
+                    <span>Welcome Text : </span><span class="wrapper-input" error-text=""><input id="welcomeTextInput" type="text" class="input-btn" value="" maxlength="50" size="60" /></span>
+                </div>
+                <h2>Game Commands</h2>
+                <hr>
+                <div id="game-commands">
+                    <span>Reset Hall of Fame : </span><button id="resetHof" class="btn"><ion-icon class="icon" name="alert-circle-outline"></ion-icon>Reset</button>
+                </div>
+            </section>
+            <!-- -->
+        </div>
+        <script src="./js/starter.js" type="module"></script>
+    </main>
+    <footer><p>FHNW Student - Cyril Adam</p></footer>
+</body>
+
+</html>

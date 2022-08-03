@@ -1,10 +1,9 @@
 import { Observable } from "./modules/observable.js";
 import { io } from "./modules/client-dist/socket.io.esm.min.js";
-// import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
 export { HomeView }
 
-let debug=true;
+let debug=false;
 let localStorageKey = 'toggleItems';
 
 const HomeControler = () => {
@@ -26,7 +25,6 @@ const HomeControler = () => {
 
   emitPing();
   intervalId = setInterval(()=>{
-    // console.log('ping');
     emitPing((error) => {
         if(error) console.log(`emitPing error: ${error}`);
     }); 
@@ -78,7 +76,7 @@ const HomeView = () => {
     elem.onclick=(e) => toggleItem.collapse.setValue(elem.checked);
   }
 
-  homeControler.onLanMsgChange((msgData) => msgData&&console.log(`get [${msgData.message}] in ${new Date().getTime()-msgData.createdAt}ms`));
+  if(debug) homeControler.onLanMsgChange((msgData) => msgData&&console.log(`Get [${msgData.message}] in ${new Date().getTime()-msgData.createdAt}ms`));
 
   return {
     addToggle,

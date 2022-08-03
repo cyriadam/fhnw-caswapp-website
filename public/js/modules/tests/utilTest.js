@@ -1,7 +1,7 @@
 import "./../util.js";
 import { tat } from "./../test.js";
 
-tat('Module UTIL / test-cases-1', (assert) => {
+tat('Prototype', (assert) => {
     console.log('running [util]Test cases...');
 
     // --- test function 'times'

@@ -1,7 +1,7 @@
 import { Observable, ObservableList} from "./../observable.js";
 import { tat } from "./../test.js";
 
-tat('Module Observable / test-cases-1', (assert) => {
+tat('Observable', (assert) => {
   let found;
   const obs = Observable("");
 

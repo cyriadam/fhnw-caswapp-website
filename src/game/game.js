@@ -3,7 +3,7 @@ const { random } = require("../utils/general");
 
 const log4js = require("../services/log4j");
 let logger = log4js.getLogger("gameCtrl".toFixed(10));
-// logger.level = "debug";
+logger.level = "error";
 
 const constants = Object.freeze({
     "d_up": 1,
@@ -270,8 +270,8 @@ const GameControler = (game, players, hallOfFame, partyData) => {
         logger.debug(`gameStarted.onChange(${started})`);
         if (started) {
             players.data.forEach((player) => {
-                logger.debug(`emit 'partyLocked' to player ${player.playerName}`);
-                player.socket.emit("partyLocked");
+                logger.debug(`emit partyLocked(partyId=[${partyData.partyId}]) to player ${player.playerName}`);
+                player.socket.emit("partyLocked", partyData.partyId);  
             });
             gameData.getObs('timer').setValue(game.getIntervalGame()/1000);
             setTimeout(initGame, game.getTimeoutStartGame());
