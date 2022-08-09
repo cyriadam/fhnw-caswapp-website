@@ -1,3 +1,8 @@
+/**
+ * @module projector/chatProjector
+ * Projector for the ChatItemModel 
+ */
+
 import { dom } from "../utils/general.js";
 import * as Log from "../utils/log4js.js";
 
@@ -7,7 +12,12 @@ Log.setLogLevel(Log.LEVEL_ERROR);
 
 const masterClassName = "chat";
 
-const toDoChatItemElt = (chatController, rootElt, item) => {
+/**
+ * Create the dom structure of a chat message
+ * @param  {Object} item
+ * @return {ChildNode}
+ */
+const toDoChatItemElt = (item) => {
   let itemElt = dom(
     `<div class="${masterClassName} ${item.emit.getValue() ? "right" : "left"}" id="CHAT-ITEM_${item.id}">` +
       (item.emit.getValue()
@@ -20,17 +30,26 @@ const toDoChatItemElt = (chatController, rootElt, item) => {
   return itemElt;
 };
 
+/**
+ * The chatController add the dom structure of a chat message in the dom
+ * @param  {Object} chatController
+ * @param  {HTMLElement} rootElt
+ * @param  {Object} item
+ */
 const chatProjector = (chatController, rootElt, item) => {
   Log.debug(`chatProjector.render(${item.toString()})`);
-  let itemElt = toDoChatItemElt(chatController, rootElt, item);
+  let itemElt = toDoChatItemElt(item);
   rootElt.insertAdjacentElement("beforeend", itemElt);
-  rootElt.scrollTop = rootElt.scrollHeight;
+  rootElt.scrollTop = rootElt.scrollHeight;     // point of interest : scroll to the end
 };
 
+/**
+ * The style used by the projector
+ */
 const pageCss = `
   .${masterClassName} {
     padding: 10px 10px 5px 10px;
-    border: 1px solid #c7c7c7;
+    border: 1px solid var(--color-border-grey);
     margin-bottom: 8px;
     width: fit-content;
   }

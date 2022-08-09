@@ -47,6 +47,7 @@ body {
   --color-main: #c92a2a; /* https://yeun.github.io/open-color/ */
   --color-grey: #343a40;
   --color-greylight: #6c6c6c;
+  --color-border-grey: #c7c7c7;
 }
 
 footer {
@@ -99,7 +100,7 @@ hr {
   margin-bottom: 10px;
 
   height: 1px;
-  background-color: #c7c7c7;
+  background-color: var(--color-border-grey);
   border: none;
 }
 
@@ -108,7 +109,7 @@ hr {
   padding: 10px 30px;
   border-radius: 50px;
   background-color: #fff;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   display: flex;
   align-items: center;
@@ -159,7 +160,7 @@ hr {
 .input-btn {
   padding: 10px;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   outline: none;
 }
 
@@ -234,7 +235,7 @@ label.switch {
   border-radius: 100px;
   display: inline-block;
   position: relative;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   margin-right: 10px;
 }
@@ -246,13 +247,13 @@ label.switch::after {
   border-radius: 100px;
   display: inline-block;
   background-color: white;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   top: 2px;
   left: 3px;
   transition: 0.3s;
 }
 input[type="checkbox"]:checked + label.switch {
-  background-color: #c7c7c7;
+  background-color: var(--color-border-grey);
 }
 label.switch:active::after {
   width: calc(75% - 3px);
@@ -281,7 +282,7 @@ input[type="checkbox"]:checked + label.switch::after {
 
 dialog {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   border-radius: 10px;
   margin: auto;
   top: -10vh;
@@ -291,7 +292,7 @@ dialog header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #c7c7c7;
+  border-bottom: 1px solid var(--color-border-grey);
   margin: 0;
   padding: 8px 16px;
 }
@@ -303,7 +304,7 @@ dialog main {
 
 dialog header .dialog-close {
   padding: 4px;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   border-radius: 8px;
   position: relative;
   font-size: 20px;

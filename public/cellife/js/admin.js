@@ -1,3 +1,10 @@
+/**
+ * @module admin
+ * Render of the Admin Section
+ * 
+ * Note: No controller is needed. The bind is done directly with the dataPoolController and hallOfFameController
+ */
+
 import { checkFieldLength, clearError } from "./utils/general.js";
 import * as Log from "./utils/log4js.js";
 import { renderSlider } from "./utils/slider.js";
@@ -15,8 +22,12 @@ const AdminView = (dataPoolController, hallOfFameController, rootElt) => {
   let gameTimeOutElt = rootElt.querySelector("#gameTimeOut");
   let welcomeTxtElt = rootElt.querySelector("#welcomeTxt");
 
-  //!\ NEVER oninput to avoid loop event with dataPoolController !!! /!\
-  dataPoolController.getObsIn("nbPlayerBullets").onChange((val) => {
+  /**
+   * !WARNING!
+   * To avoid data synchronization issue in a client-server architecture, the binding with the dataPoolController 
+   * is done on the ONCHANGE event of the element and NOT on the ONINPUT event
+   */
+  dataPoolController.getObsIn("nbPlayerBullets").onChange((val) => {           
     nbPlayerBulletsElt.value = val;
     renderSlider(nbPlayerBulletsElt)();
   });

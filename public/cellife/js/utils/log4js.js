@@ -1,3 +1,10 @@
+/**
+ * @module utils/log4js
+ * Console log service
+ * 
+ * Note: the localTime is added to the message
+ */
+
 export const LEVEL_NONE = -1;
 export const LEVEL_ERROR = 0;
 export const LEVEL_WARN = 1;

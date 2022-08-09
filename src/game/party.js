@@ -2,7 +2,7 @@ const { sequence, random } = require("../utils/general");
 const { Observable, ObservableObject } = require("../utils/observable");
 const CustomError = require("../utils/CustomError");
 const { createResponse, createMessage } = require("../utils/io-message");
-const { Game, GameControler } = require("./game");
+const { Game, GameController } = require("./game");
 
 const log4js = require("../services/log4j");
 let logger = log4js.getLogger("partyCtrl".toFixed(10));
@@ -17,7 +17,7 @@ const Party = (partyId, nbPlayers, partyName, playerName, hallOfFame) => {
   const expired = Observable(false);
   const game = Game(dataPool.getValue("nbPlayerBullets"), dataPool.getValue("nbBombs"), dataPool.getValue("gameDuration"), dataPool.getValue("gameTimeOut"));
   const players = { data: [] };
-  const gameControler = GameControler(game, players, hallOfFame, { partyId, partyName, nbPlayers }); // pass players by reference
+  const gameController = GameController(game, players, hallOfFame, { partyId, partyName, nbPlayers }); // pass players by reference
   const info = ObservableObject({
     id: partyId,
     nbPlayers,
@@ -28,7 +28,7 @@ const Party = (partyId, nbPlayers, partyName, playerName, hallOfFame) => {
     status: "open",
   });
 
-  gameControler.gameStarted.onChange((started) => {
+  gameController.gameStarted.onChange((started) => {
     if (started) {
       clearInterval(timeoutExpiredId);
       info.getObs("status").setValue("closed");
@@ -57,7 +57,7 @@ const Party = (partyId, nbPlayers, partyName, playerName, hallOfFame) => {
       player.socket.emit("message", createMessage(`Player ${playerName} joins the party ${partyName}`));
     });
 
-    players.data.push(gameControler.createPlayer(socket, playerId, playerName));
+    players.data.push(gameController.createPlayer(socket, playerId, playerName));
     info.getObs("players").setValue([...info.getObs("players").getValue(), { playerId, playerName }]);
 
     socket.on("leaveParty", (callback) => {
@@ -78,7 +78,7 @@ const Party = (partyId, nbPlayers, partyName, playerName, hallOfFame) => {
       if (callback) callback(createResponse());
     });
 
-    if (players.data.length == nbPlayers) gameControler.gameStarted.setValue(true);
+    if (players.data.length == nbPlayers) gameController.gameStarted.setValue(true);
 
     return playerId;
   };
@@ -87,7 +87,7 @@ const Party = (partyId, nbPlayers, partyName, playerName, hallOfFame) => {
     id: partyId,
     name: partyName,
     expired,
-    isStarted: gameControler.gameStarted.getValue,
+    isStarted: gameController.gameStarted.getValue,
     addPlayer,
     info,
   };

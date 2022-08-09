@@ -1,7 +1,13 @@
-// a dataflow abstraction that is not based on concurrency but on laziness
+/**
+ * @module utils/dataflow
+ * A dataflow abstraction
+ */
 
 export { DataFlowVariable, Scheduler };
-
+/**
+ * A dataflow abstraction that is not based on concurrency but on laziness
+ * @param  {Function} howto - the initialisation function
+ */
 const DataFlowVariable = (howto) => {
   let value = undefined;
   return () => {
@@ -13,7 +19,9 @@ const DataFlowVariable = (howto) => {
   };
 };
 
-// execute asynchronous tasks in strict sequence
+/**
+ *  Execute asynchronous tasks in strict sequence
+ */
 const Scheduler = () => {
   let inProcess = false;
   const tasks = [];

@@ -128,7 +128,7 @@ const ObservableObject = (model) => {
     getProperties: () => Object.keys(observables),
   };
 };
-/** test cases ** 
+/** test cases **
     const moi = ObservableObject({name:'adam', prenom:'cyril'});
     moi.onChange(val=>console.log('[IICI] moi is updated :', JSON.stringify(val)));
     moi.getObs('age').onChange(val=>console.log(`[IICI] age = ${val}`));
@@ -204,7 +204,7 @@ const ObservableObjectProperties = (model) => {
     getProperties: () => Object.keys(observables),
   };
 };
-/** test cases ** 
+/** test cases **
     const dataPool = ObservableObjectProperties({var1:1, var2:2, var3:undefined});
     dataPool.setValue({var3:'toto'});
     dataPool.setValue({var4:undefined});
@@ -213,7 +213,7 @@ const ObservableObjectProperties = (model) => {
     const rmSubscription3 = dataPool.onChange(val => console.log(`[IICI-3] get(${JSON.stringify(val)})`));
     dataPool.setValue({var2:dataPool.getValue('var2')+1});
     rmSubscription2();
-    dataPool.setValue({var4:random(1000)});
+    dataPool.setValue({var4:99});
     console.log(`[IICI-4] model=[${JSON.stringify(dataPool.getModel())}]`);
     dataPool.setValue({var5:'hello', var6:'world'});
     dataPool.setValue({var5:'hi'});

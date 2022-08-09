@@ -1,3 +1,8 @@
+/**
+ * @module projector/partySelectionProjector
+ * Projector for the PartyItemModel selected
+ */
+
 import { dom } from "../utils/general.js";
 import { properties } from "../utils/presentationModel.js";
 import { NoPartyItem } from "../party.js";
@@ -9,6 +14,11 @@ Log.setLogLevel(Log.LEVEL_ERROR);
 
 const masterClassName = "partySelection";
 
+/**
+ * Create the dom structure of the PartyItem
+ * @param  {*} item
+ * @return {ChildNode}
+ */
 const toDoPartySelectionElt = (item) => {
   let itemElt = dom(
     `<div>` +
@@ -42,24 +52,29 @@ const toDoPartySelectionElt = (item) => {
   return itemElt;
 };
 
+/**
+ * The partySelectionProjector creates the party detail item
+ * @param  {*} partySelectionController
+ * @param  {HTMLElement} rootElt
+ * @param  {*} partyItem
+ */
 const partySelectionProjector = (partySelectionController, rootElt, partyItem) => {
   Log.debug(`partySelectionProjector.render(${partyItem.toString()})`);
 
   if (!rootElt.classList.contains(`${masterClassName}`)) rootElt.classList.add(`${masterClassName}`);
 
   rootElt.innerHTML = "";
-  if (partyItem == NoPartyItem) {
-    rootElt.insertAdjacentElement("beforeend", dom(`<span class='noSelection'>No Party Information</span>`));
-    // rootElt.classList.add('none');
-  } else {
-    // rootElt.classList.remove('none');
-    Array.from(toDoPartySelectionElt(partyItem).children).forEach((childElt) => rootElt.insertAdjacentElement("beforeend", childElt));
-  }
+  // different render for NoPartyItem and a partyItem
+  if (partyItem == NoPartyItem) rootElt.insertAdjacentElement("beforeend", dom(`<span class='noSelection'>No Party Information</span>`));
+  else Array.from(toDoPartySelectionElt(partyItem).children).forEach((childElt) => rootElt.insertAdjacentElement("beforeend", childElt));
 };
 
+/**
+ * The style used by the projector
+ */
 const pageCss = `
   .${masterClassName} {
-    border: 1px solid #c7c7c7;
+    border: 1px solid var(--color-border-grey);
     border-radius: 20px;
     padding: 20px;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
@@ -69,21 +84,21 @@ const pageCss = `
     background-color: #ff00000d;
     width: 100%;
     padding-left: 10px;
-    border-left: 1px solid #c7c7c7;
-    border-right: 1px solid #c7c7c7;
+    border-left: 1px solid var(--color-border-grey);
+    border-right: 1px solid var(--color-border-grey);
   }
 
   .${masterClassName} label:first-of-type {
-    border-left: 1px solid #c7c7c7;
+    border-left: 1px solid var(--color-border-grey);
     border-top-left-radius: 20px;
-    border-top: 1px solid #c7c7c7;
+    border-top: 1px solid var(--color-border-grey);
     padding-top: 10px;
   }
 
   .${masterClassName} label:last-of-type  {
-    border-left: 1px solid #c7c7c7;
+    border-left: 1px solid var(--color-border-grey);
     border-bottom-left-radius: 20px;
-    border-bottom: 1px solid #c7c7c7;
+    border-bottom: 1px solid var(--color-border-grey);
     padding-bottom: 10px;
   }
 

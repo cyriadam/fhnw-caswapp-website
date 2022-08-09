@@ -120,8 +120,8 @@ const PartyView = (partyController, gameController, partySelectionController, ro
     partyItem ? partySelectionController.setSelectedModel(partyItem) : partySelectionController.clearSelection();
   });
 
-  const joinPartyBtnsEnable = (enable) =>
-    rootElt.querySelectorAll("button.joinPartyBtn").forEach((elt) => (enable ? elt.removeAttribute("disabled") : elt.setAttribute("disabled", "disabled")));
+  const joinPartyBtnsEnable = (enable) => rootElt.querySelectorAll("button.joinPartyBtn").forEach((elt) => (enable ? elt.removeAttribute("disabled") : elt.setAttribute("disabled", "disabled")));
+
   partyController.enable.onChange(joinPartyBtnsEnable);
 };
 

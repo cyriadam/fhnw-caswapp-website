@@ -1,3 +1,8 @@
+var-from-general-css 
+{
+    --color-border-grey: #c7c7c7;
+}
+
 /* menu */
 
 .screen {
@@ -106,8 +111,6 @@ body.splash {
   margin: 0 auto;
 }
 
-/* hallOfFame */
-
 /* game */
 
 #message {
@@ -168,7 +171,7 @@ body.splash {
 #wrapper-chat {
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -192,7 +195,7 @@ body.splash {
 #chatRoom {
   height: 20vh;
   overflow-y: scroll;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
   border-radius: 0px 0px 10px 10px;
   padding: 16px;
   background-color: #fff;
@@ -214,13 +217,14 @@ body.splash {
   height: 1.8rem;
 }
 
+
 #wrapper-canvas {
   position: relative;
   width: 70vh;
   height: 70vh;
   border-radius: 20px;
   overflow: hidden;
-  border: 1px solid #c7c7c7;
+  border: 1px solid var(--color-border-grey);
 }
 
 #wrapper-canvas img,

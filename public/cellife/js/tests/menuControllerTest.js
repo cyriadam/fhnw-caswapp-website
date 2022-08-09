@@ -1,3 +1,8 @@
+/**
+ * @module tests/menuControllerTest
+ * Test cases for the MenuController 
+ */
+
 import { tat } from "./../../../js/modules/test.js";
 import { dom } from "../utils/general.js";
 import { MenuController, MenuView, MenuModel, MenuItem, properties } from "./../menu.js";

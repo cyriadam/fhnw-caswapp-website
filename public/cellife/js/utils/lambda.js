@@ -1,3 +1,8 @@
+/**
+ * @module utils/lambda
+ * Collection of lambda expressions
+ */
+
 // --- lamba exp ---
 export const id = (x) => x;
 const konst = (x) => (y) => x;

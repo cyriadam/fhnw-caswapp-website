@@ -1,3 +1,8 @@
+/**
+ * @module starter
+ * Initialise all controllers and views used in the cellife game
+ */
+
 import { io } from "./client-dist/socket.io.esm.min.js";
 import { MenuController, MenuView, MenuModel } from "./menu.js";
 import { SplashController } from "./splash.js";
@@ -16,17 +21,18 @@ import { persistCheckboxes, reset } from "./utils/localStorage.js";
 const mainStarter = () => {
   const socket = io();
 
+  // settings of the game
   const properties = {
-    nbMaxChatItems: 20,
+    splashDuration: 40 * 1000, // duration of the splash screen
+    nbMaxChatItems: 20, // number max of line is the chat
   };
 
   const rootElt = document.querySelector("#main-content");
   const menuElt = document.querySelector("#section-menu");
-  let hallOfFameContainer = rootElt.querySelector("#hallOfFame");
 
   // initialise controllers and views
   const menuController = MenuController(MenuModel);
-  const splashController = SplashController(menuController, rootElt);
+  const splashController = SplashController(menuController, rootElt, properties.splashDuration);
   const helpController = HelpController(menuController);
   const hallOfFameController = HallOfFameController(socket, HallOfFameItemModel);
   const dataPoolController = DataPoolController(socket);
@@ -42,16 +48,12 @@ const mainStarter = () => {
   const chatView = ChatView(chatController, dataPoolController, gameController, rootElt);
   const partyView = PartyView(partyController, gameController, partySelectionController, rootElt);
 
-  // build the menu
-  menuController.init();
-  gameController.init();
-  // prevent all input fields from html injection
-  secureHtmlInputs();
-  // render the sliders
-  renderSliders(rootElt);
-  // persist checkbox state
-  persistCheckboxes("persist");
-  escapeDialogs();
+  menuController.init();            // build the menu and open the splash
+  gameController.init();            // initialise the game
+  secureHtmlInputs();               // prevent all input fields from html injection
+  renderSliders(rootElt);           // render the sliders
+  persistCheckboxes("persist");     // persist checkboxes state
+  escapeDialogs();                  // customize the dialogs
 };
 
 mainStarter();

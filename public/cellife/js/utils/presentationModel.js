@@ -1,3 +1,8 @@
+/**
+ * @module utils/presentationModel
+ * Implementation of the Presentation Model Pattern with Attributes
+ */
+
 import { Observable } from "./observable.js";
 import { id } from "./lambda.js";
 

@@ -1,3 +1,8 @@
+/**
+ * @module dataPool
+ * synchronize objects in a client-server architecture 
+ */
+
 import { Observable } from "./utils/observable.js";
 import { makeObj } from "./utils/general.js";
 import * as Log from "./utils/log4js.js";
@@ -6,9 +11,18 @@ export { DataPoolController };
 
 Log.setLogLevel(Log.LEVEL_ERROR);
 
+/**
+ * DataPoolController
+ * 
+ * Note : 
+ * - the DataPoolController contains 2 observable lists to register the subscribers to notifications from the server and to emit data to the server (wrapped in an object)
+ * - for more flexibility, on notification, the data is set to the incoming observables list (if the variable was registered) or directly to html document 
+ * @param {*} socket 
+ * @returns {Object} { getObsOut(), getObsIn() }
+ */
 const DataPoolController = (socket) => {
-  const obsListOut = {};
-  const obsListIn = {};
+  const obsListOut = {};    // list of observables which will notify the server on change
+  const obsListIn = {};     // list of observables to render server notifications
 
   const hasObs = (obsList) => (name) => obsList.hasOwnProperty(name);
   const getObs =
@@ -27,7 +41,7 @@ const DataPoolController = (socket) => {
       if (!hasObs(obsList)(name)) {
         const obs = Observable(initialValue);
         obs.onChange((value) => {
-          if (value != null) emitSetDataPoolValue(makeObj(name, value));
+          if (value != null) emitSetDataPoolValue(makeObj(name, value));    // the data are wrapped in an object
         });
         obsList[name] = obs;
       }
@@ -58,7 +72,7 @@ const DataPoolController = (socket) => {
     else {
       let elt = document.getElementById(name);
       if (elt) {
-        if (elt instanceof HTMLInputElement) elt.value = data[name];
+        if (elt instanceof HTMLInputElement) elt.value = data[name];    // point of interest
         else elt.innerHTML = data[name];
       }
     }

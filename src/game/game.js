@@ -130,7 +130,7 @@ const Game = (nbPlayerBullets = 3, nbBombs = 10, gameDuration = 30, gameTimeOut 
   };
 };
 
-const GameControler = (game, players, hallOfFame, partyData) => {
+const GameController = (game, players, hallOfFame, partyData) => {
   let intervalBombId;
   let timeoutGameId;
   let intervalNexBordId;
@@ -316,4 +316,4 @@ const GameControler = (game, players, hallOfFame, partyData) => {
   };
 };
 
-module.exports = { Game, GameControler };
+module.exports = { Game, GameController };

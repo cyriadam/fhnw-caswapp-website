@@ -1,3 +1,8 @@
+/**
+ * @module projector/hallOfFameProjector
+ * Projector for the HallOfFameItemModel 
+ */
+
 import { dom } from "../utils/general.js";
 import { properties } from "../utils/presentationModel.js";
 import * as Log from "../utils/log4js.js";
@@ -8,8 +13,13 @@ Log.setLogLevel(Log.LEVEL_ERROR);
 
 const masterClassName = "hallOfFame";
 
+/**
+ * Create the dom structure of the HallOfFame header
+ * @param  {*} item
+ * @return {ChildNode}
+ */
 const toDoHallOfFameHeaderElt = (item) => {
-  // return dom(`<div>`+ATTRIBUTE_NAMES.map(attrName => `<span class="${masterClassName}-label">${item[0][attrName].getObs(properties.LABEL).getValue()}</span>`).join('')+`</div>`);
+  // Other (?) implementation : return dom(`<div>`+ATTRIBUTE_NAMES.map(attrName => `<span class="${masterClassName}-label">${item[0][attrName].getObs(properties.LABEL).getValue()}</span>`).join('')+`</div>`);
   let itemElt = dom(
     `<div class="${masterClassName}-label">` +
       `<span>${item[0].playerName.getObs(properties.LABEL).getValue()}</span>` +
@@ -21,6 +31,11 @@ const toDoHallOfFameHeaderElt = (item) => {
   return itemElt;
 };
 
+/**
+ * Create the dom structure of the HallOfFame line
+ * @param  {*} item
+ * @return {ChildNode}
+ */
 const toDoHallOfFameElt = (item) => {
   let itemElt = dom(
     `<div class="${masterClassName}-row">` +
@@ -39,6 +54,12 @@ const toDoHallOfFameElt = (item) => {
   return itemElt;
 };
 
+/**
+ * The hallOfFameProjector add the dom structure of a hallOfFame item in the dom
+ * @param  {*} hallOfFameController
+ * @param  {HTMLElement} rootElt
+ * @param  {*} hallOfFame
+ */
 const hallOfFameProjector = (hallOfFameController, rootElt, hallOfFame) => {
   Log.debug(`hallOfFameProjector.render()`);
   if (!hallOfFame.length) return;
@@ -55,10 +76,14 @@ const hallOfFameProjector = (hallOfFameController, rootElt, hallOfFame) => {
   titleElt.insertAdjacentElement("beforeend", toDoHallOfFameHeaderElt(hallOfFame));
   hallOfFame.forEach((item) => listElt.insertAdjacentElement("beforeend", toDoHallOfFameElt(item)));
 
-  // Array.from(toDoHallOfFameHeaderElt(hallOfFame).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt));
-  // hallOfFame.forEach(item => Array.from(toDoHallOfFameElt(item).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt)) );
+  // Other (?) implementation : 
+  //    Array.from(toDoHallOfFameHeaderElt(hallOfFame).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt));
+  //    hallOfFame.forEach(item => Array.from(toDoHallOfFameElt(item).children).forEach(childElt=>rootElt.insertAdjacentElement('beforeend', childElt)) );
 };
 
+/**
+ * The style used by the projector
+ */
 const pageCss = `
   .${masterClassName} {
   }
@@ -67,7 +92,7 @@ const pageCss = `
     display: grid;
     box-sizing: border-box;
     width: 100%;
-    border: 1px solid #c7c7c7;
+    border: 1px solid var(--color-border-grey);
     border-radius: 20px;
     grid-template-columns: repeat(4, 1fr);
     padding: 10px;
@@ -90,21 +115,21 @@ const pageCss = `
   .${masterClassName}-label span, .${masterClassName}-row span {
     text-align: center;
     padding: 10px;
-    border-bottom: 1px solid #c7c7c7;
-    border-top: 1px solid #c7c7c7;
+    border-bottom: 1px solid var(--color-border-grey);
+    border-top: 1px solid var(--color-border-grey);
     display:flex;
     justify-content:center;
     align-items:center;
   }
 
   .${masterClassName}-label span:first-child, .${masterClassName}-row span:first-child {
-    border-left: 1px solid #c7c7c7;
+    border-left: 1px solid var(--color-border-grey);
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
 }
 
 .${masterClassName}-label span:last-child, .${masterClassName}-row span:last-child  {
-    border-right: 1px solid #c7c7c7;
+    border-right: 1px solid var(--color-border-grey);
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
 }
@@ -114,14 +139,3 @@ const pageCss = `
   }
 `;
 
-// .${masterClassName}-list {
-//     height: 300px;
-//     overflow-y: scroll;
-// }
-// .${masterClassName}-list::-webkit-scrollbar {
-//     width: 0px;
-// }
-// .${masterClassName}-row:hover span {
-//     background-color: #dbeaf4;
-//     cursor: pointer;
-// }

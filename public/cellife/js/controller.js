@@ -1,5 +1,6 @@
 /**
  * @module Controllers as shallow wrappers around observables
+ * Generic selection controller
  */
 import { Observable } from "./utils/observable.js";
 

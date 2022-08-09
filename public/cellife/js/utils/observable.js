@@ -1,7 +1,21 @@
+/**
+ * @module utils/observable
+ * interface from the GoF Observable design pattern.
+ */
+
 import { makeObj } from "./general.js";
 
+/**
+ * Observable for a value
+ * Notify a list of subscribers when the value is changed
+ *
+ * Note : the methods enable() and diseable() are used to desactivate the notification process.
+ * - It could be used to preform many updates and notify only once at the end
+ *
+ * @param {*} value
+ */
 export const Observable = (value) => {
-  const listerners = [];
+  const listerners = []; // list of subscribers
   let enable = true;
 
   const remove = (array) => (subscriber) => {
@@ -41,9 +55,15 @@ export const Observable = (value) => {
   };
 };
 
+/**
+ * Observable for a list
+ * Notify a list of subscribers when an object is added or removed from the list
+ *
+ * @param {Array} list
+ */
 export const ObservableList = (list) => {
-  const onAddListeners = [];
-  const onDelListeners = [];
+  const onAddListeners = []; // list of subscribers when an object is added to the list
+  const onDelListeners = []; // list of subscribers when an object is removed to the list
 
   const add = (item) => {
     list.push(item);
@@ -69,11 +89,30 @@ export const ObservableList = (list) => {
     delAll,
     clear: () => (list.length = 0),
     count: () => list.length,
-    countIf: (pre) => list.reduce((sum, item) => (pre(item) ? sum + 1 : sum), 0),
-    find: (pre) => list.find(pre),
+    countIf: (pre) => list.reduce((sum, item) => (pre(item) ? sum + 1 : sum), 0), // point of interest
+    find: (pre) => list.find(pre), // point of interest
   };
 };
 
+/**
+ * Observable for an object
+ * 
+ * Note :
+ * - Subscribers are notify when a property of the object is updated and received 'only' the model back
+ * - Subscribers can also be added only on a single property
+ * - New properties can be added but won't be part of the model
+ *
+ * @param {Object} model
+ *
+ * @example
+ *
+ * const person = ObservableObject({name:'Do', firstname:'John'});
+ * person.onChange(val=>console.log('person is updated :', JSON.stringify(val)));
+ * person.getObs('firstname').setValue('John1');
+ * person.setValue({name:'Do2', firstname:'John2'});
+ * person.getObs('age').onChange(val=>console.log(`age = ${val}`));
+ * person.getObs('age').setValue(30);
+ */
 export const ObservableObject = (model) => {
   const rawValue = Observable(JSON.stringify(model));
   const observables = {};
@@ -84,6 +123,9 @@ export const ObservableObject = (model) => {
     return hasObs(name) ? observables[name] : (observables[name] = Observable(initialValue));
   };
 
+  /**
+   * Initialisation : create the observables for the model
+   */
   Object.keys(model).forEach((key) => {
     const obs = getObs(key, model[key]);
     obs.onChange((val, oldVal) => {
@@ -101,12 +143,15 @@ export const ObservableObject = (model) => {
   };
 
   const setValue = (obj) => {
-    rawValue.diseable();
+    // disable all observables
+    rawValue.diseable();        
     Object.keys(observables).forEach((key) => observables[key].diseable());
+    // perform the updates
     Object.keys(obj).forEach((key) => {
       if (hasObs(key)) observables[key].setValue(obj[key]);
       else observables[key] = Observable(obj[key]);
     });
+    // enable the observables
     Object.keys(observables).forEach((key) => observables[key].enable());
     rawValue.enable();
   };
@@ -120,6 +165,24 @@ export const ObservableObject = (model) => {
   };
 };
 
+
+/**
+ * Observable for an object properties
+ * 
+ * Note :
+ * - Subscribers are notify when a property of the object is updated 
+ * - New properties can be added to the model
+ *
+ * @param {Object} model
+ *
+ * @example
+ *
+ * const car = ObservableObject({brand:'Opel', model:'Corsa'});
+ * car.onChange(val=>console.log('car is updated :', JSON.stringify(val)));
+ * car.setValue({color:'red'});
+ * car.setValue({model: 'Astra' color:'White'});
+ * console.log(`model=[${JSON.stringify(car.getModel())}]`);
+ */
 export const ObservableObjectProperties = (model) => {
   const listerners = [];
   const observables = {};
@@ -158,6 +221,9 @@ export const ObservableObjectProperties = (model) => {
 
   const getValue = (name) => (hasObs(name) ? observables[name].getValue() : undefined);
 
+  /**
+   * Initialisation : create the observables for the model
+   */
   Object.keys(model).forEach((key) => {
     const obs = getObs(key, model[key]);
     obs.onChange((val, oldVal) => {

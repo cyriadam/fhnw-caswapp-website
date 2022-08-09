@@ -1,3 +1,10 @@
+/**
+ * @module hallOfFame
+ * handle the hallOfFame
+ * 
+ * Note: we receive the whole hallOfFame content from the server on any change
+ */
+
 import { Observable } from "./utils/observable.js";
 import { addStyle, sequence } from "./utils/general.js";
 import { Attribute, properties as propertiesAttr } from "./utils/presentationModel.js";
@@ -10,6 +17,18 @@ Log.setLogLevel(Log.LEVEL_ERROR);
 
 const idSequence = sequence();
 
+/**
+ * Create the HallOfFameItem object 
+ * 
+ * Note: the HallOfFameItem object has following properties :
+ * - id : local uid
+ * - playerName : name of the player
+ * - score : the score of the player
+ * - comment : the comment of the player
+ * - createdAt : the date when the item is created
+ * @param {Object} data - row values
+ * @returns {Object} { id, playerName(), score(), comment(), createdAt(), toString() }
+ */
 const HallOfFameItemModel = (data) => {
   const id = idSequence.next().value;
 
@@ -44,9 +63,15 @@ const HallOfFameItemModel = (data) => {
   };
 };
 
+/**
+ * HallOfFameController
+ * @param {Object} hallOfFameItemConstructor 
+ * @returns {Object} { hallOfFame(), hofReset(), hofAddComment() }
+ */
 const HallOfFameController = (socket, hallOfFameItemConstructor) => {
   const hallOfFame = Observable([]);
 
+  // emit methods
   const emitHofSubscribe = (callBack) => socket.emit("hofSubscribe", callBack);
   const emitHofReset = (callBack) => socket.emit("hofReset", callBack);
   const emitHofAddComment = (playerId, comment, callBack) => socket.emit("hofAddComment", { playerId, comment }, callBack);
@@ -70,6 +95,11 @@ const HallOfFameController = (socket, hallOfFameItemConstructor) => {
   };
 };
 
+/**
+ * HallOfFameView
+ * @param {Object} hallOfFameController 
+ * @param {HTMLElement} rootElt 
+ */
 const HallOfFameView = (hallOfFameController, rootElt) => {
   let hallOfFameContainer = rootElt.querySelector("#wrapper-hallOfFame");
 
@@ -77,7 +107,7 @@ const HallOfFameView = (hallOfFameController, rootElt) => {
   hallOfFameController.hallOfFame.onChange(render);
 };
 
-// main
+// main : inject the style used by the projector
 (() => {
   addStyle("HallOfFameCss", hallOfFameProjectorCss);
 })();
