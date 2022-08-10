@@ -1,3 +1,8 @@
+/**
+ * @module party
+ * handle the administration of a party (creation, join, leave) and the subscription to the list of available parties
+ */
+
 import { Observable } from "./utils/observable.js";
 import { addStyle, sequence } from "./utils/general.js";
 import { Attribute, properties as propertiesAttr } from "./utils/presentationModel.js";
@@ -11,6 +16,20 @@ Log.setLogLevel(Log.LEVEL_ERROR);
 
 const idSequence = sequence();
 
+/**
+ * Create the PartyItem object 
+ * 
+ * Note: the HallOfFameItem object has following properties :
+ * - id : local uid
+ * - name : name of the party
+ * - nbPlayers : nb of players 
+ * - createdBy : the creator of the party 
+ * - createdAt : the date when the party is created
+ * - status : the status of the party ( 'open' when the party accepts new player(s), 'closed' when the all payers have joined the party ) 
+ * - players : the list of players which join the party
+ * @param {Object} data - row values
+ * @returns {Object} { id, name(), nbPlayers(), createdBy(), createdAt(), status(), players(), toString() }
+ */
 const PartyItemModel = (data) => {
   const id = data.id != undefined ? data.id : idSequence.next().value;
   const nameAttr = Attribute(data.name || "", `PartyItem.${id}.name`);
@@ -54,13 +73,31 @@ const PartyItemModel = (data) => {
   };
 };
 
+
+/**
+ * PartyController
+ * 
+ * Note : services are following 
+ * - enable : enable or disable the possibility to join a party (when the user join a party, when the game has not yet started or is running)
+ * - partiesInfo : list of all parties
+ * - newParty : create a new party & automatically join it
+ * - joinParty : join a party 
+ * - leaveParty : leave the current party
+ * - partyTimeOut : on partyTimeOut notification the game state is set to 'cancel'
+ * - partyLocked : on partyTimeOut notification the game state is set to 'locked'
+ * 
+ * @param {*} socket 
+ * @param {*} partyItemConstructor 
+ * @returns {Object} { enable(), partiesInfo(), newParty(), joinParty(), leaveParty(), partyTimeOut(), partyLocked() }
+ */
 const PartyController = (socket, partyItemConstructor) => {
-  const partyTimeOut = Observable(false);
-  const partyLocked = Observable(false);
+  const partyTimeOut = Observable(false);   // true when the party falls on timeout
+  const partyLocked = Observable(false);    // true when all players joined the party and the game will start soon
 
-  const enable = Observable(true);
-  const partiesInfo = Observable([]);
+  const enable = Observable(true);          // if true, the user can not join another party (buttons are diseable)
+  const partiesInfo = Observable([]);       // list of all parties
 
+  // emit methods
   const emitPartiesInfoSubscribe = (callBack) => socket.emit("partiesInfoSubscribe", callBack);
   const emitNewParty = (nbPlayers, partyName, playerName, callBack) => socket.emit("newParty", { nbPlayers, partyName, playerName }, callBack);
   const emitJoinParty = (partyId, playerName, callBack) => socket.emit("joinParty", { partyId, playerName }, callBack);
@@ -105,29 +142,40 @@ const PartyController = (socket, partyItemConstructor) => {
   };
 };
 
+/**
+ * PartyView
+ * @param {Object} partyController 
+ * @param {Object} gameController - master
+ * @param {Object} partySelectionController - detail
+ * @param {HTMLElement} rootElt 
+ */
 const PartyView = (partyController, gameController, partySelectionController, rootElt) => {
   let partiesInfoContainer = rootElt.querySelector("#wrapper-parties");
   let partyDetailContainer = rootElt.querySelector("#party-detail");
 
+  // master
   const render = (partiesInfo) => partyProjector(partyController, gameController, partySelectionController, partiesInfoContainer, partiesInfo);
   partyController.partiesInfo.onChange(render);
 
+  // detail
   const renderSelection = (partyItem) => partySelectionProjector(partySelectionController, partyDetailContainer, partyItem);
   partySelectionController.onModelSelected(renderSelection);
+  // clear the selection of epired items
   partyController.partiesInfo.onChange((partiesInfo) => {
     const partyId = partySelectionController.getSelectedModel().id;
     const partyItem = partyController.partiesInfo.getValue().find((item) => item.id == partyId);
     partyItem ? partySelectionController.setSelectedModel(partyItem) : partySelectionController.clearSelection();
   });
 
+  // enable/diseable buttons to join a party
   const joinPartyBtnsEnable = (enable) => rootElt.querySelectorAll("button.joinPartyBtn").forEach((elt) => (enable ? elt.removeAttribute("disabled") : elt.setAttribute("disabled", "disabled")));
-
   partyController.enable.onChange(joinPartyBtnsEnable);
 };
 
+// singleton : creation of a 'NoPartyItem'
 const NoPartyItem = PartyItemModel({ id: -1 });
 
-// main
+// main : inject the style used by the projectors
 (() => {
   addStyle("PartyCss", partyProjectorCss);
   addStyle("PartySelectionCss", partySelectionProjectorCss);

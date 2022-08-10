@@ -36,7 +36,6 @@ usage of socket.io
    - broadcasting to all clients or to a subset of clients (called "Room")
    - multiplexing (called "Namespace") : A Namespace is a communication channel that allows you to split the logic of your application over a single shared connection
 
-
 usage of observables and attributes
 new Observables : ObservableObject and ObservableObjectProperties
 
@@ -47,8 +46,11 @@ test case : MenuController
 usage of scheduler (to synchronise animation and dialog display)
 
 usage of dialog htmlelement
+extend Error exception
+
 divers : prevent all input fields from html injection
 divers : persistence all user settings
+divers : the partyController on server side is generic and can be used to handle different type of games
 
 issue : data synchronization issue in a client-server architecture : the 'update devil loop'
     cause : the client is desynchronized with the server when it sent several updates before receiving the acknowledge.
@@ -123,6 +125,36 @@ Client                                HallOfFameServer
 
          -- hofReset ------------------------> 
          -- hofAddComment -------------------> 
+
+
+Protocol client to PartyServer
+----------------------------------
+
+Client                                PartyServer 
+         -- partiesInfoSubscribe ------------> register the Subscription
+         <--- partiesInfo -------------------- onChange() 
+
+         -- newParty ------------------------> 
+         <--- { partyId, playerId } ----------
+
+         -- joinParty -----------------------> 
+         <--- { playerId, partyName } --------
+
+         -- leaveParty ----------------------> 
+
+         <--- partyTimeOut ------------------- 
+         <--- partyLocked -------------------- 
+
+Note : the PartyController create a partyItem which has his own gameController instance for the game logic
+       the player is created by the gameController (specific)
+
+party state : 'open' <-> 'closed'
+game state :  
+    'init' ->  'join' -> 'locked' -> 'run' -> 'gameOver' or 'highScore' 
+                  ^   -> 'cancel'                             |
+                  |         |                                 |
+                  ----------|---------------------------------|
+
 
 
 links

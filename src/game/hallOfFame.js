@@ -16,12 +16,12 @@ logger.level = "error";
 
 
 /**
- * HallOfFameControler
+ * HallOfFameController
  * 
  * Note: the data are persist on change
  * @returns {Object}  { isHighScore(), addHighScore(), listen() }
  */
-const HallOfFameControler = () => {
+const HallOfFameController = () => {
   const hallOfFame = Observable([]);
 
   // the filler contains the default values 
@@ -162,4 +162,4 @@ const HallOfFameControler = () => {
   };
 };
 
-module.exports = { HallOfFameControler };
+module.exports = { HallOfFameController };

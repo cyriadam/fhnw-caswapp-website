@@ -65,6 +65,7 @@ const HallOfFameItemModel = (data) => {
 
 /**
  * HallOfFameController
+ * @param {*} socket 
  * @param {Object} hallOfFameItemConstructor 
  * @returns {Object} { hallOfFame(), hofReset(), hofAddComment() }
  */
