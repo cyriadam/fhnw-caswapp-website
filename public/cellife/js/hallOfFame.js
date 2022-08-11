@@ -77,6 +77,7 @@ const HallOfFameController = (socket, hallOfFameItemConstructor) => {
   const emitHofReset = (callBack) => socket.emit("hofReset", callBack);
   const emitHofAddComment = (playerId, comment, callBack) => socket.emit("hofAddComment", { playerId, comment }, callBack);
 
+   // socket parameter : the HallOfFameItem properties
   socket.on("hallOfFame", (data) => {
     Log.debug(`HallOfFameController.get('hallOfFame')=${JSON.stringify(data)}`);
     let value = [];

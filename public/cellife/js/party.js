@@ -19,7 +19,7 @@ const idSequence = sequence();
 /**
  * Create the PartyItem object 
  * 
- * Note: the HallOfFameItem object has following properties :
+ * Note: the PartyItem object has following properties :
  * - id : local uid
  * - name : name of the party
  * - nbPlayers : nb of players 
@@ -87,7 +87,7 @@ const PartyItemModel = (data) => {
  * - partyLocked : on partyTimeOut notification the game state is set to 'locked'
  * 
  * @param {*} socket 
- * @param {*} partyItemConstructor 
+ * @param {Function} partyItemConstructor 
  * @returns {Object} { enable(), partiesInfo(), newParty(), joinParty(), leaveParty(), partyTimeOut(), partyLocked() }
  */
 const PartyController = (socket, partyItemConstructor) => {
@@ -103,6 +103,7 @@ const PartyController = (socket, partyItemConstructor) => {
   const emitJoinParty = (partyId, playerName, callBack) => socket.emit("joinParty", { partyId, playerName }, callBack);
   const emitLeaveParty = (callBack) => socket.emit("leaveParty", callBack);
 
+  // socket parameter : the PartyItem properties
   socket.on("partiesInfo", (data) => {
     Log.debug(`PartyController.get('partiesInfo')=${JSON.stringify(data)}`);
     let value = [];
@@ -110,11 +111,13 @@ const PartyController = (socket, partyItemConstructor) => {
     partiesInfo.setValue(value);
   });
 
+  // socket parameter : the partyId
   socket.on("partyTimeOut", (partyId) => {
     Log.debug(`PartyController.get('partyTimeOut(partyId=[${partyId}])')`);
     partyTimeOut.setValue(true);
   });
 
+  // socket parameter : the partyId
   socket.on("partyLocked", (partyId) => {
     Log.debug(`PartyController.get('partyLocked(partyId=[${partyId}])')`);
     partyLocked.setValue(true);

@@ -9,7 +9,7 @@ const { sequence, random } = require("../utils/general");
 const { Observable, ObservableObject } = require("../utils/observable");
 const CustomError = require("../utils/CustomError");
 const { createResponse, createMessage } = require("../utils/io-message");
-const { Game, GameController } = require("./game");
+const { Game, GameController } = require("./gameCellife");
 
 const log4js = require("../services/log4j");
 let logger = log4js.getLogger("partyCtrl".toFixed(10));

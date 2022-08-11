@@ -1,3 +1,8 @@
+/**
+ * @module game
+ * handle the game (creation, join, leave)
+ */
+
 import { random, playSound, checkFieldLength, clearError, onDialogSubmit } from "./utils/general.js";
 import { Observable, ObservableList } from "./utils/observable.js";
 import { renderSlider } from "./utils/slider.js";
@@ -10,6 +15,12 @@ export { GameController, GameView };
 
 Log.setLogLevel(Log.LEVEL_ERROR);
 
+/**
+ * Create the User instance (unique)
+ * 
+ * Note: the properties of the user are : his name and some player properties (id, score and nbBullets)
+ * @returns {Object} {id(), setId(), getName(), setName(), onNameChange(), score(), nbBullets()}
+ */
 const User = () => {
   let playerId;
   const name = Observable();
@@ -26,6 +37,19 @@ const User = () => {
   };
 };
 
+
+/**
+ * Create a Player item (a party has one or several players)
+ * 
+ * Note: update() is an utility function to update several properties in one call
+ * @param {number} playerId 
+ * @param {Object} coord {x, y}
+ * @param {number} direction 
+ * @param {number} stateValue (1: means 'alive', 2: means 'dead')
+ * @param {number} score 
+ * @param {number} nbBullets 
+ * @returns {Object} { playerId, coord, direction, state, score, nbBullets, update() }
+ */
 const Player = (playerId, coord, direction, stateValue, score, nbBullets) => {
   const state = Observable(stateValue);
   return {
@@ -45,6 +69,15 @@ const Player = (playerId, coord, direction, stateValue, score, nbBullets) => {
   };
 };
 
+
+/**
+ * Create a Game instance (unique)
+ * 
+ * Note: 
+ * - The properties of a game are  : his frameRate and the boundaries (the size of the battlefield)
+ * - In a futur version, the frameRate could be set according to client performances and the boundaries moved to party properties
+ * @returns {Object} {frameRate(), boundaries()}
+ */
 const Game = () => {
   let boundaries = { x: 20, y: 20 };
   let frameRate = 30;
@@ -54,24 +87,49 @@ const Game = () => {
   };
 };
 
-const GameController = (socket, hallOfFameController, partyController, menuController) => {
-  let user = User();
-  let game = Game();
-  let players = ObservableList([]);
-  let bombs = [];
-  let intervalTimeId;
-  let message = Observable();
-  const gameState = Observable("init");
-  const gameStarted = Observable();
-  const refreshTimer = Observable(0);
-  const gameData = Observable({});
 
+/**
+ * GameController
+ * 
+ * Note :
+ * - When a party is started the client subscribes for gameData (information about the current party) : id of the party, name of the party, nbPlayers, the time left until end of game and the percent of the battelfield covered (not used yet in this release)
+ * 
+ * Note : services are following 
+ * - init : initialisation of the game
+ * - openSection : script runs by the menuController every time that the game section is open
+ * - newParty : create a new party
+ * - joinParty : join a party
+ * - leaveParty : leave the current party
+ * - playerTurn : the player changes the dirrection of the cell
+ * - playerDropBomb : the player drop a bombs
+ * - hofAddComment : the player add a comment in the hallOfFame
+ * - access to all observables
+ * @param {*} socket 
+ * @param {Object} hallOfFameController 
+ * @param {Object} partyController 
+ * @param {Object} menuController 
+ * @returns {Object} { init(), openSection(), newParty(), joinParty(), leaveParty(), playerTurn(), playerDropBomb(), hofAddComment(), ...}
+ */
+const GameController = (socket, hallOfFameController, partyController, menuController) => {
+  let user = User();                        // the user
+  let game = Game();                        // the game
+  let players = ObservableList([]);         // alls players
+  let bombs = [];                           // the list of all bombs
+  let intervalTimeId;                       // the framerate interval
+  let message = Observable();               // the game message
+  const gameState = Observable("init");     // the state of the game : 'init', 'join', 'locked', 'run', 'gameOver', 'highScore', 'cancel' 
+  const gameStarted = Observable();         // true if the game has started
+  const refreshTimer = Observable(0);       // observable the time
+  const gameData = Observable({});          // the game properties : { partyId, partyName, nbPlayers, timer, cover}
+
+  // emit methods
   const emitPing = (callBack) => {
     if (socket.connected) socket.emit("ping", { time: new Date().getTime() }, callBack);
   };
   const emitPlayerTurn = (clockwise, callBack) => socket.emit("playerTurn", { clockwise }, callBack);
   const emitPlayerDropBomb = (callBack) => socket.emit("playerDropBomb", callBack);
 
+  // when the game is started, starts the framerate interval, otherwise reset the game (list of players and bombs)
   gameStarted.onChange((started) => {
     if (started == undefined) return;
     if (started) {
@@ -83,11 +141,13 @@ const GameController = (socket, hallOfFameController, partyController, menuContr
     }
   });
 
+  // diseable the partyProjector buttons
   gameState.onChange((state) => {
     Log.debug(`GameState=${state}`);
     partyController.enable.setValue(!["join", "locked", "run"].includes(state));
   });
 
+  // the party expired because all players didn't join on time and the game is cancel
   partyController.partyTimeOut.onChange((timeOut) => {
     if (timeOut) {
       message.setValue(`Party Cancelled`);
@@ -95,6 +155,7 @@ const GameController = (socket, hallOfFameController, partyController, menuContr
     }
   });
 
+  // on players join the party and the game will start soon
   partyController.partyLocked.onChange((locked) => {
     if (locked) {
       message.setValue(`Party Locked`);
@@ -109,6 +170,7 @@ const GameController = (socket, hallOfFameController, partyController, menuContr
 
   socket.on("message", (data) => message.setValue(data.message));
 
+  // socket parameter : the players list
   socket.on("gameStarted", (data) => {
     Log.debug(`GameController.get('gameStarted')=${JSON.stringify(data)}`);
     message.setValue(`Game Started`);
@@ -121,6 +183,7 @@ const GameController = (socket, hallOfFameController, partyController, menuContr
     gameState.setValue("run");
   });
 
+  // socket parameter : boolean if the user has a highScore
   socket.on("gameOver", (data) => {
     Log.debug(`GameController.get('gameOver')=${JSON.stringify(data)}`);
     message.setValue(`Game Over`);
@@ -128,11 +191,13 @@ const GameController = (socket, hallOfFameController, partyController, menuContr
     gameState.setValue(data.highScore ? "highScore" : "gameOver");
   });
 
+  // socket parameter : the coord of the new bomb
   socket.on("bomb", (data) => {
     Log.debug(`GameController.get('bomb')=${JSON.stringify(data)}`);
     bombs.push(data);
   });
 
+  // socket parameter : the coord, direction, state, score, nbBullets of all players
   socket.on("nextBoard", (data) => {
     Log.debug(`GameController.get('nextBoard')=${JSON.stringify(data)}`);
     data.forEach((p) => (players.find((e) => e.playerId == p.playerId) || { update: () => {} }).update(p.coord, p.direction, p.state, p.score, p.nbBullets)); // :)
@@ -145,7 +210,9 @@ const GameController = (socket, hallOfFameController, partyController, menuContr
     emitPing();
   });
 
+  // socket parameter : the game properties 
   socket.on("gameData", (data) => {
+    console.log(`GameController.get('gameData')=${JSON.stringify(data)}`)
     Log.debug(`GameController.get('gameData')=${JSON.stringify(data)}`);
     gameData.setValue(data);
   });
@@ -227,12 +294,22 @@ const GameController = (socket, hallOfFameController, partyController, menuContr
   };
 };
 
+
+/**
+ * GameView
+ * 
+ * Note: 
+ * - Usage of Scheduler to open the dialog after the end of the animation
+ * @param {Object} gameController 
+ * @param {Object} hallOfFameController 
+ * @param {HTMLElement} rootElt 
+ */
 const GameView = (gameController, hallOfFameController, rootElt) => {
   const placeholderExpend = Observable(false);
   const scheduler = Scheduler();
 
   let canvas = rootElt.querySelector(".game-canvas");
-
+  // --
   let messageElt = rootElt.querySelector("#message");
   let userNameElt = rootElt.querySelector("#username");
   let scoreElt = rootElt.querySelector("#score");
@@ -262,6 +339,7 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
   let virusDeadImgElt = document.querySelector("#virusDeadImg");
   let bombImgElt = document.querySelector("#bombImg");
 
+  // render the cellife game
   const renderGame = ((canvas, players, bombs, game) => () => {
     const d_up = 1;
     const d_right = 2;
@@ -275,10 +353,11 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
     context.clearRect(0, 0, canvas.width, canvas.height);
     let cellWidth = canvas.width / game.boundaries().x;
     let cellHeight = canvas.height / game.boundaries().y;
-    // -- skin cells --
+    // -- draw the bombs
     bombs
       .filter((bomb) => players.find((player) => player.coord().x == bomb.x && player.coord().y == bomb.y) == undefined)
       .forEach((bomb) => context.drawImage(bombImgElt, bomb.x * cellWidth - 4, bomb.y * cellHeight - 4, cellWidth + 8, cellHeight + 8));
+    // --- draw the player as a cell
     players
       .filter((player) => player.playerId == game.playerId())
       .forEach((player) =>
@@ -290,6 +369,7 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
           cellHeight + 8
         )
       );
+    // --- draw all other players as virus
     players
       .filter((player) => player.playerId != game.playerId())
       .forEach((player) =>
@@ -303,6 +383,7 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
       );
   })(canvas, gameController.getPlayers(), gameController.getBombs(), gameController.getGameSettings());
 
+  // handle the keyboard during the game
   const handleKeyBoard = (e) => {
     if (e.repeat) return; //  key is being held down such that it is automatically repeating
     if (e.code === "ArrowRight") {
@@ -316,7 +397,8 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
       gameController.playerDropBomb();
     }
   };
-
+  
+  // display or hiden the parties list and chatroom
   togglePlaceholderElt.onchange = (e) => placeholderExpend.setValue(e.target.checked);
   placeholderExpend.onChange((expend) => {
     expend
@@ -332,9 +414,10 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
 
   leavePartyBtn.onclick = (e) => gameController.leaveParty();
 
+  // start the gameOver or HightScore animation
   const playAnimation = ((elt) => (msg) => {
     elt.style.animation = "";
-    elt.offsetHeight; // important to trigger reflow!
+    elt.offsetHeight;                                                               // point of interest : important to trigger reflow!
     elt.children[0].setAttribute("data-shadow", msg);
     elt.children[0].innerHTML = msg;
     elt.style.animation = "down-anim 4s forwards, fadeout-anim 1s 5s forwards";
@@ -345,8 +428,10 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
     Log.debug(`Message=[${msg}]`);
     messageElt.innerHTML = msg;
   });
+
   gameController.onUserNameChange((playerName) => (userNameElt.value = playerName));
   gameController.onUserScoreChange((score) => (scoreElt.innerHTML = score));
+
   gameController.onUserNbBulletsChange(
     (nbBullets) => (nbBulletsElt.innerHTML = Array.from({ length: nbBullets }).reduce((p, c) => p + '<ion-icon name="skull-outline"></ion-icon>', ""))
   );
@@ -355,6 +440,10 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
     currPartyNameElt.innerHTML = data.partyName || "";
     currPartyTimerElt.innerHTML = data.timer || "";
   });
+
+  /**
+   * Hide buttons, start animation, play sound, open dialogs ... according to the game state
+   */
   gameController.onGameStateChange((state) => {
     Log.debug(`GameState=${state}`);
     window.removeEventListener("keydown", handleKeyBoard);
@@ -380,7 +469,7 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
       soundFanfare.play();
       scheduler.add((ok) => {
         playAnimation("HighScore!");
-        messageAnimatedElt.addEventListener("animationend", ok, { once: true });
+        messageAnimatedElt.addEventListener("animationend", ok, { once: true });            // point of interest
       });
       scheduler.add((ok) => {
         highScoreDialog.querySelector("form").reset();
@@ -392,6 +481,7 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
     }
   });
 
+  // play a sound when a player died
   gameController.onAddPlayers((player) => player.state.onChange((state) => state == 2 && soundBlip.play()));
 
   hallOfFameController.hallOfFame.onChange(
@@ -400,8 +490,7 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
 
   gameController.onTimeChange((_) => renderGame());
 
-  // dialog create New Party
-
+  // -- dialog create New Party
   const createNewParty = (formElt) => {
     if ([checkFieldLength(userNameElt, 5)].some((r) => !r)) return;
     Log.debug(`createNewParty(nbPlayers=[${formElt["nbPlayers"].value}], partyName=[${formElt["partyName"].value}])`);
@@ -409,20 +498,24 @@ const GameView = (gameController, hallOfFameController, rootElt) => {
   };
 
   newPartyBtn.onclick = (e) => {
+    // reset the form, elements and clear error message
     newPartyDialog.querySelector("form").reset();
     renderSlider(nbPlayersElt)();
     clearError(partyNameElt);
+    // display the dialog
     newPartyDialog.showModal();
     newPartyDialog.querySelector("form").elements[0].focus();
   };
 
   newPartyDialog.querySelector("form").addEventListener("submit", (e) => {
-    if ([checkFieldLength(partyNameElt, 5)].some((r) => !r)) e.preventDefault();
+    // cancel the submit if one of the fields have errors
+    if ([checkFieldLength(partyNameElt, 5)].some((r) => !r)) e.preventDefault();        // point of interest
   });
 
+  // binding between the dialog submit and the business method
   onDialogSubmit(newPartyDialog, createNewParty);
 
-  // dialog high Score
+  // -- dialog high Score
   highScoreDialog.querySelector("form").addEventListener("submit", (e) => {
     if ([checkFieldLength(highScoreCommentElt, 2)].some((r) => !r)) e.preventDefault();
   });

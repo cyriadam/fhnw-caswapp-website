@@ -156,6 +156,29 @@ game state :
                   ----------|---------------------------------|
 
 
+Protocol client to gameCellife
+----------------------------------
+
+Client ( render )                        GameServer ( game logic )
+         -- ping ---------------------------->
+         <--- pong ---------------------------
+         <--- message ------------------------
+         <--- gameStarted --------------------
+         -- playerTurn ---------------------->
+         -- playerDropBomb ------------------>
+         <--- nextBoard ---------------------- onChange() 
+         <--- bomb --------------------------- onChange() 
+         <--- gameData ----------------------- onChange() 
+         <--- gameOver -----------------------
+
+Game logic:
+ - The Bullets are refilled every 10 seconds
+ - Every 5 seconds the game is faster
+ - The game boundaries is a square of 20x20 units  
+ - Bombs are dropped every 5 seconds by the game engine or by the players
+ - The bonus are : 1 point if the player move to an unexplored position, 5 points every 5 seconds and 50% of the score of the players killed
+ - The players are located in a battlefield. For futur versions, the battlefield could contains special items (traps, walls, ...)
+ - On every turn for all plyers : move in game boundaries, detection collision with bombs, detection collision with players, handle player action, increment score
 
 links
 ===============================================
@@ -210,3 +233,4 @@ divers :
     https://www.smashingmagazine.com/2020/02/magic-flip-cards-common-sizing-problem
     https://www.w3schools.com/howto/howto_css_flip_card.asp
     https://www.codewithrandom.com/2022/01/08/page-flip-animation-css-page-flip-using-html-css
+    https://alvarotrigo.com/shadow-gradients/

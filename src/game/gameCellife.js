@@ -1,3 +1,16 @@
+/**
+ * @module gameCellife
+ * cellife game engine
+ * 
+ * Some characteristics:
+ * - The Bullets are refilled every 10 seconds
+ * - Every 5 seconds the game is faster
+ * - The game boundaries is a square of 20x20 units  
+ * - Bombs are dropped every 5 seconds by the game engine or by the players
+ * - The bonus are : 1 point if the player move to an unexplored position, 5 points every 5 seconds and 50% of the score of the players killed
+ * - The players are located in a battlefield. For futur versions, the battlefield could contains special items (traps, walls, ...)
+ */
+
 const { Observable, ObservableObject } = require("../utils/observable");
 const { random } = require("../utils/general");
 
@@ -5,6 +18,7 @@ const log4js = require("../services/log4j");
 let logger = log4js.getLogger("gameCtrl".toFixed(10));
 logger.level = "error";
 
+// some constants
 const constants = Object.freeze({
   d_up: 1,
   d_right: 2,
@@ -50,14 +64,32 @@ const turnClockwise = (direction, clockwise) => {
     : directionsAntiClockwise[directionsAntiClockwise.findIndex((elt) => elt == direction) + 1];
 };
 
+/**
+ * Create a player Item
+ * 
+ * Note: 
+ * - The initial direction is random
+ * - Every player has his own interval to refill the bullets
+ * - getValues() retrieves the properties to sent to the client 
+ * @param {*} socket 
+ * @param {number} playerId 
+ * @param {String} playerName 
+ * @param {Object} coord { x, y } 
+ * @param {number} direction ( d_up|d_right|d_down|d_left )
+ * @param {number} state (s_alive|s_dead)
+ * @param {number} score 
+ * @param {number} nbBullets 
+ * @param {number} intervalRefillBullets 
+ * @returns {Object} { socket, playerId, playerName, coord, direction, state, incScore, decNbBullets, incNbBullets, dropBomb, getValues }
+ */
 const Player = (socket, playerId, playerName, coord, direction = 1 + random(4), state = 1, score = 0, nbBullets = 0, intervalRefillBullets) => {
-  let _coord = coord;
-  let _direction = direction;
-  let _state = state;
-  let _score = score;
-  let _nbBullets = nbBullets;
-  let _dropBomb = false;
-  let intervalRefillBulletsId;
+  let _coord = coord;               // the coord of the player
+  let _direction = direction;       // the direction of the player
+  let _state = state;               // the state of the player
+  let _score = score;               // the score of the player
+  let _nbBullets = nbBullets;       // the nb of available bullets
+  let _dropBomb = false;            // true if the player drop a bomb, evaluated in the nextBoard() method 
+  let intervalRefillBulletsId;      // bomb refill interval
 
   const decNbBullets = () => {
     if (_nbBullets > 0) {
@@ -97,18 +129,34 @@ const Player = (socket, playerId, playerName, coord, direction = 1 + random(4), 
   };
 };
 
+/**
+ *  Create a Game item (contains the game properties)
+ * 
+ * Note:
+ * - The intervalRefillBullets is set to 10 seconds
+ * - The interval to evaluate the nextboard is initialised to 500ms and get faster every 5 seconds
+ * - The game boundaries is a square of 20x20 units  
+ * @param {number} [nbPlayerBullets]=3 : number max of bullets per player
+ * @param {number} [nbBombs]=10 : number of random bombs added during the party
+ * @param {number} [gameDuration]=30 : duration of the party
+ * @param {number} [gameTimeOut]=30 : delay before the party expired if all players didn't join
+ * @returns {Object} { reset(), faster(), ... } 
+ */
 const Game = (nbPlayerBullets = 3, nbBombs = 10, gameDuration = 30, gameTimeOut = 30) => {
   logger.debug(`initialise the Game with : nbPlayerBullets=${nbPlayerBullets}, nbBombs=${nbBombs}, gameDuration=${gameDuration}, gameTimeOut=${gameTimeOut} `);
-  let intervalBomb = 5;
-  let intervalRefillBullets = 10;
-  let intervalNextBoard = 500;
-  let boundaries = { x: 20, y: 20 };
-  const bonus = Object.freeze({ move: 1, time: 5, bomb: 0.5 }); // bonus bomb is 50 % of the score of the player score
 
+  let gameStart = 3;                    // the game start 3 seconds after the party is looked
+  let intervalBomb = 5;                 // a new bomb is drop by the game engine every 5 seconds 
+  let intervalRefillBullets = 10;       // interval to refill the bullets
+  let intervalNextBoard = 500;          // nextboard interval
+  let boundaries = { x: 20, y: 20 };    // boundaries of the game
+  // bonus properties
+  const bonus = Object.freeze({ move: 1, time: 5, bomb: 0.5 }); // bonus bomb is 50 % of the score of the player score
+  // battelField were all players are located
   let battelField = Array.from({ length: boundaries.x }, (v, i) => Array.from({ length: boundaries.y }, (v, i) => bonus.move));
 
   return {
-    getTimeoutStartGame: () => 3 * 1000,
+    getTimeoutStartGame: () => gameStart * 1000,
     getTimeoutGame: () => gameTimeOut * 1000,
     getIntervalBomb: () => intervalBomb * 1000,
     getIntervalGame: () => gameDuration * 1000,
@@ -130,13 +178,22 @@ const Game = (nbPlayerBullets = 3, nbBombs = 10, gameDuration = 30, gameTimeOut 
   };
 };
 
+/**
+ * GameController and Game engine
+ * 
+ * @param {Object} game : the game properties
+ * @param {Object} players : list of players
+ * @param {*} hallOfFame : hallOfFame controller
+ * @param {*} partyData : party properties
+ * @returns {Object} { gameStarted(), createPlayer() }
+ */
 const GameController = (game, players, hallOfFame, partyData) => {
-  let intervalBombId;
-  let timeoutGameId;
-  let intervalNexBordId;
-  let intervalFasterId;
+  let intervalBombId;           // interval to drop a new bomb
+  let timeoutGameId;            // timeout interval
+  let intervalNexBordId;        // interval to evaluate the nextBoard
+  let intervalFasterId;         // interval to speed up the game
+  let intervalTimerId;          // interval to notify gameData
   let rmGameDataSubscription;
-  let intervalTimerId;
 
   const gameData = ObservableObject({ ...partyData, timer: game.getIntervalGame() / 1000, cover: 100 });
   const gameStarted = Observable(false);
@@ -144,13 +201,16 @@ const GameController = (game, players, hallOfFame, partyData) => {
   let nbBombs;
   let bombs = [];
 
+  /**
+   * The whole Game Logic
+   */
   const nextBoard = () => {
     players.data.forEach((player) => {
-      if (player.getState() == constants.s_dead) return;
+      if (player.getState() == constants.s_dead) return;    // ignore dead players
 
       // move in boundaries
-      const playerCoords = { ...player.getCoord() };
-      const playersCoords = players.data.map((p) => ({ playerId: p.playerId, coord: { ...p.getCoord() } })); // shadow copy
+      const playerCoords = { ...player.getCoord() };                                                            // point of interest : shadow copy
+      const playersCoords = players.data.map((p) => ({ playerId: p.playerId, coord: { ...p.getCoord() } }));    // point of interest : shadow copy
       player.setCoord(keepInBoundaries(move(player.getCoord(), player.getDirection()), game.getBoundaries()));
 
       // collision with bombs detection
@@ -172,10 +232,9 @@ const GameController = (game, players, hallOfFame, partyData) => {
         return;
       }
 
-      // player action
+      // player action : warning : the player must move BEFORE dropping a bomb
       if (player.isDropBomb()) {
         player.decNbBullets();
-        // a factoriser  <-------
         const bomb = { coord: { x: playerCoords.x, y: playerCoords.y }, owner: player.playerId };
         bombs.push(bomb);
         players.data.forEach((player) => {
@@ -184,7 +243,7 @@ const GameController = (game, players, hallOfFame, partyData) => {
         });
       }
 
-      // increment score
+      // increment score if the player move to an unexplored position
       if (game.battelField[player.getCoord().x][player.getCoord().y] != 0) {
         player.incScore(game.battelField[player.getCoord().x][player.getCoord().y]);
         game.battelField[player.getCoord().x][player.getCoord().y] = 0;
@@ -192,6 +251,7 @@ const GameController = (game, players, hallOfFame, partyData) => {
     });
   };
 
+  // drop a bomb and notify all players
   const dropBomb = (boundaries) => {
     // drop a random bomb
     if (nbBombs-- > 0) {
@@ -206,6 +266,7 @@ const GameController = (game, players, hallOfFame, partyData) => {
     }
   };
 
+  // evaluate the nextBoard on time interval 
   nextBoardTimer.onChange((now) => {
     if (now > 0) {
       nextBoard();
@@ -219,11 +280,15 @@ const GameController = (game, players, hallOfFame, partyData) => {
     }
   });
 
+  /**
+   * Initialise and start the game 
+   */
   const initGame = () => {
     // init the game
     const playersData = players.data.map((player) => player.getValues());
+
     players.data.forEach((player) => {
-      // register the player events
+      // register the player events : playerTurn & playerDropBomb
       player.socket.on("playerTurn", ({ clockwise }, callback) => {
         player.setDirection(turnClockwise(player.getDirection(), clockwise));
         if (callback) callback();
@@ -232,15 +297,19 @@ const GameController = (game, players, hallOfFame, partyData) => {
         player.dropBomb();
         if (callback) callback();
       });
+
       // sent gameStarted to all players
       logger.debug(`emit 'gameStarted' to player ${player.playerName}`);
       player.socket.emit("gameStarted", playersData);
     });
+
     nbBombs = game.getNbBombs();
+
     // initialise the intervals
     intervalBombId = setInterval(() => dropBomb(game.getBoundaries()), game.getIntervalBomb());
     timeoutGameId = setTimeout(() => gameStarted.setValue(false), game.getIntervalGame());
     intervalNexBordId = setInterval(() => nextBoardTimer.setValue(Date.now()), game.getIntervalNextBoard());
+
     intervalFasterId = setInterval(() => {
       game.faster();
       clearInterval(intervalNexBordId);
@@ -250,21 +319,26 @@ const GameController = (game, players, hallOfFame, partyData) => {
         if (player.getState() == constants.s_alive) player.incScore(game.getBonus().time);
       });
     }, game.getIntervalFaster());
+
     intervalTimerId = setInterval(() => gameData.getObs("timer").setValue(gameData.getObs("timer").getValue() - 1), 1000);
   };
 
+  /**
+   * Reset the game
+   */
   const resetGame = () => {
     // reset the game
     players.data.forEach((player) => {
-      // remove the player events listerners
+      // remove the player events listerners : playerTurn, playerDropBomb & leaveParty
       player.socket.removeAllListeners("playerTurn");
       player.socket.removeAllListeners("playerDropBomb");
       player.socket.removeAllListeners("leaveParty");
-      // send gameOver to all players
+      // send gameOver 
       logger.debug(`emit 'gameOver' to player ${player.playerName}`);
+      // note: add 500ms delay so the client didn't received all end-of-game events in the same moment
       if (hallOfFame.isHighScore(player.getScore())) {
         hallOfFame.addHighScore(player.playerId, player.playerName, player.getScore());
-        setTimeout(() => player.socket.emit("gameOver", { highScore: true }), 500);
+        setTimeout(() => player.socket.emit("gameOver", { highScore: true }), 500);         
       } else setTimeout(() => player.socket.emit("gameOver", { highScore: false }), 500);
     });
     players.data = [];
@@ -277,7 +351,8 @@ const GameController = (game, players, hallOfFame, partyData) => {
     clearInterval(intervalFasterId);
     clearInterval(intervalTimerId);
   };
-
+  
+  // handle to start of end of the game
   gameStarted.onChange((started) => {
     logger.debug(`gameStarted.onChange(${started})`);
     if (started) {
