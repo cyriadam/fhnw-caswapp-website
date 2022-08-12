@@ -7,8 +7,10 @@
  * - Every 5 seconds the game is faster
  * - The game boundaries is a square of 20x20 units  
  * - Bombs are dropped every 5 seconds by the game engine or by the players
- * - The bonus are : 1 point if the player move to an unexplored position, 5 points every 5 seconds and 50% of the score of the players killed
+ * - The bonus are : 1*nbPlayers (*) point(s) if the player move to an unexplored position, 5 points every 5 seconds and 50% of the score of the players killed
  * - The players are located in a battlefield. For futur versions, the battlefield could contains special items (traps, walls, ...)
+ * 
+ * (*) This logic is implemented to not penalize multi-players party (the average score per user should be the same regardless the number of players)
  */
 
 const { Observable, ObservableObject } = require("../utils/observable");
@@ -103,7 +105,7 @@ const Player = (socket, playerId, playerName, coord, direction = 1 + random(4), 
     if (_nbBullets == nbBullets) intervalRefillBulletsId = clearInterval(intervalRefillBulletsId);
   };
   const incScore = (value) => {
-    _score += value;
+    _score = Math.max(0, _score+value);         // point of interest
   };
 
   return {
@@ -216,11 +218,14 @@ const GameController = (game, players, hallOfFame, partyData) => {
       // collision with bombs detection
       let collisionBomb = getCollisionItem(player.getCoord(), bombs);
       if (collisionBomb) {
-        logger.debug(`collision(playerId=[${player.playerId}]) with bomb`);
-        player.setState(constants.s_dead);
-        // bonus for the owner of the bomb
-        if (collisionBomb.owner != -1 && collisionBomb.owner != player.playerId)
-          players.data.find((p) => p.playerId == collisionBomb.owner).incScore(Math.floor(player.getScore() * game.getBonus().bomb));
+          logger.debug(`collision(playerId=[${player.playerId}]) with bomb`);
+          player.setState(constants.s_dead);
+          // bonus for the owner of the bomb
+          if (collisionBomb.owner != -1 && collisionBomb.owner != player.playerId) {
+            const bonus = Math.floor(player.getScore() * game.getBonus().bomb);
+            players.data.find((p) => p.playerId == collisionBomb.owner).incScore(bonus);
+            player.incScore(-bonus);
+        }
         return;
       }
 
@@ -245,7 +250,7 @@ const GameController = (game, players, hallOfFame, partyData) => {
 
       // increment score if the player move to an unexplored position
       if (game.battelField[player.getCoord().x][player.getCoord().y] != 0) {
-        player.incScore(game.battelField[player.getCoord().x][player.getCoord().y]);
+        player.incScore(game.battelField[player.getCoord().x][player.getCoord().y]*players.data.length);
         game.battelField[player.getCoord().x][player.getCoord().y] = 0;
       }
     });
